@@ -406,6 +406,11 @@ html.reveal-full-page,
   overflow: hidden;
 }
 
+.window-body.code-compact {
+  font-size: 0.56em;
+  line-height: 1.5;
+}
+
 .window-body .prompt-marker {
   color: var(--accent-2);
 }
@@ -751,6 +756,12 @@ html.reveal-full-page,
   grid-template-columns: 1fr 1fr;
   gap: 0.9em;
   align-items: start;
+}
+
+.stack-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7em;
 }
 
 .checklist {

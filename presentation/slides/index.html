@@ -411,13 +411,13 @@
         <section>
           <div class="slide-kicker">Code → observability, for free</div>
           <h2>Three activity calls. One real execution timeline.</h2>
-          <div class="two-col" style="margin-top: 0.6em">
+          <div class="stack-col" style="margin-top: 0.6em">
             <div class="window">
               <div class="window-bar">
                 <span class="dot"></span><span class="dot"></span><span class="dot"></span>
                 <span class="label">fraud-check.workflow.ts — simplified</span>
               </div>
-              <div class="window-body"><pre><span class="prompt-marker">const</span> { checkClaimHistory, checkWatchlists, scoreFraudRisk } =
+              <div class="window-body code-compact"><pre><span class="prompt-marker">const</span> { checkClaimHistory, checkWatchlists, scoreFraudRisk } =
   proxyActivities&lt;<span class="prompt-marker">typeof</span> activities&gt;({ ...retryPolicy });
 
 <span class="prompt-marker">export async function</span> fraudCheckWorkflow(input: ClaimInput) {

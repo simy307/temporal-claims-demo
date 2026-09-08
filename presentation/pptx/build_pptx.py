@@ -304,49 +304,52 @@ def folder_tree_slide(kicker, title, columns, note_text=None, notes=""):
 def code_and_image_slide(
     kicker, title, left_label, code_text, right_label, image_path, note_text=None, notes="", font_size=13,
 ):
-    """Two side-by-side "windows": a code block on the left, a screenshot on the right."""
+    """Two stacked "windows": a code block on top, a screenshot below."""
     s = content_slide(kicker, title, notes)
-    gap = Inches(0.3)
-    total_w = Inches(11.9)
-    col_w = Emu(int((total_w - gap) / 2))
-    top = Inches(1.9)
-    height = Inches(3.9)
-    left_x = Inches(0.7)
-    right_x = Emu(int(left_x + col_w + gap))
+    full_w = Inches(11.9)
+    x = Inches(0.7)
+    top1 = Inches(1.75)
+    height1 = Inches(2.55)
+    gap = Inches(0.25)
+    top2 = Emu(int(top1 + height1 + gap))
+    height2 = Inches(2.55)
 
-    # Left: code window.
-    rounded_card(s, left_x, top, col_w, height, fill=CODE_BG)
-    bar = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left_x, top, col_w, Inches(0.4))
+    # Top: code window.
+    rounded_card(s, x, top1, full_w, height1, fill=CODE_BG)
+    bar = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, top1, full_w, Inches(0.4))
     bar.fill.solid(); bar.fill.fore_color.rgb = RGBColor(0x15, 0x19, 0x34)
     bar.line.color.rgb = CARD_BORDER; bar.line.width = Pt(1)
     bar.shadow.inherit = False
-    _, btf = add_textbox(s, left_x + Inches(0.15), top + Inches(0.06), col_w - Inches(0.3), Inches(0.3))
+    _, btf = add_textbox(s, x + Inches(0.15), top1 + Inches(0.06), full_w - Inches(0.3), Inches(0.3))
     bp = btf.paragraphs[0]
     br = bp.add_run()
     br.text = f"●  ●  ●    {left_label}"
     style_run(br, size=10, color=MUTED, font=FONT_CODE)
-    _, tf = add_textbox(s, left_x + Inches(0.2), top + Inches(0.55), col_w - Inches(0.4), height - Inches(0.75))
+    _, tf = add_textbox(s, x + Inches(0.2), top1 + Inches(0.55), full_w - Inches(0.4), height1 - Inches(0.75))
     p = tf.paragraphs[0]
     r = p.add_run()
     r.text = code_text
     style_run(r, size=font_size, color=RGBColor(0xD6, 0xDC, 0xF5), font=FONT_CODE)
     p.line_spacing = 1.3
 
-    # Right: screenshot window.
-    rounded_card(s, right_x, top, col_w, height, fill=CODE_BG)
-    bar2 = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, right_x, top, col_w, Inches(0.4))
+    # Bottom: screenshot window.
+    rounded_card(s, x, top2, full_w, height2, fill=CODE_BG)
+    bar2 = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, top2, full_w, Inches(0.4))
     bar2.fill.solid(); bar2.fill.fore_color.rgb = RGBColor(0x15, 0x19, 0x34)
     bar2.line.color.rgb = CARD_BORDER; bar2.line.width = Pt(1)
     bar2.shadow.inherit = False
-    _, btf2 = add_textbox(s, right_x + Inches(0.15), top + Inches(0.06), col_w - Inches(0.3), Inches(0.3))
+    _, btf2 = add_textbox(s, x + Inches(0.15), top2 + Inches(0.06), full_w - Inches(0.3), Inches(0.3))
     bp2 = btf2.paragraphs[0]
     br2 = bp2.add_run()
     br2.text = f"●  ●  ●    {right_label}"
     style_run(br2, size=10, color=MUTED, font=FONT_CODE)
-    s.shapes.add_picture(image_path, right_x + Inches(0.1), top + Inches(0.5), width=col_w - Inches(0.2))
+    img_h = height2 - Inches(0.65)
+    img_w = Emu(int(img_h * (1070 / 295)))
+    img_x = Emu(int(x + (full_w - img_w) / 2))
+    s.shapes.add_picture(image_path, img_x, top2 + Inches(0.5), height=img_h)
 
     if note_text:
-        add_body(s, note_text, Emu(int(top + height + Inches(0.25))), size=14)
+        add_body(s, note_text, Emu(int(top2 + height2 + Inches(0.2))), size=14)
     return s
 
 
@@ -678,14 +681,22 @@ code_and_image_slide(
     "Code \u2192 observability, for free",
     "Three activity calls. One real execution timeline.",
     "fraud-check.workflow.ts \u2014 simplified",
-    "const { checkClaimHistory, checkWatchlists, scoreFraudRisk } =\n"
-    "  proxyActivities<typeof activities>({ ...retryPolicy });\n\n"
-    "export async function fraudCheckWorkflow(input: ClaimInput) {\n"
+    "const {\n"
+    "  checkClaimHistory,\n"
+    "  checkWatchlists,\n"
+    "  scoreFraudRisk,\n"
+    "} = proxyActivities<typeof activities>({ ...retryPolicy });\n\n"
+    "export async function fraudCheckWorkflow(\n"
+    "  input: ClaimInput,\n"
+    ") {\n"
     "  const [history, watchlist] = await Promise.all([\n"
     "    checkClaimHistory(input),\n"
     "    checkWatchlists(input),\n"
     "  ]);\n"
-    "  return await scoreFraudRisk(input.claimId, [...history, ...watchlist]);\n"
+    "  return await scoreFraudRisk(\n"
+    "    input.claimId,\n"
+    "    [...history, ...watchlist],\n"
+    "  );\n"
     "}",
     "Temporal Web UI \u2014 Timeline tab",
     os.path.join(ASSETS_DIR, "screenshots", "temporal-timeline-fraud-example.png"),
@@ -695,7 +706,7 @@ code_and_image_slide(
           "The code on the left is the entire body \u2014 just a proxyActivities call and three "
           "activity invocations, two of them running in parallel. That parallelism is exactly what "
           "you see as two overlapping bars on the right, with zero extra instrumentation code.",
-    font_size=13,
+    font_size=16,
 )
 
 cards_slide("The Temporal bingo card", "What's actually demonstrated", [
