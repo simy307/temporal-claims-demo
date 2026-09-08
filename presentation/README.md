@@ -11,7 +11,7 @@ about matching Temporal to a real use case.
 | `slides/index.html` | **Primary deck.** Custom-styled reveal.js presentation. Use this to present live. |
 | `Lifting-the-Veil-Temporal-Talk.pptx` | Editable PowerPoint backup with the same content/order — for last-minute edits, conference templates, or if a browser isn't an option. |
 | `Lifting-the-Veil-Temporal-Talk.pdf` | Portable PDF export of the HTML deck (one slide per page) — a no-dependencies fallback. |
-| `recordings/` | 7 real screen recordings (~2 min total) captured against the actual running demo, referenced by the 6 "DEMO" slides + the bonus Web UI tour. |
+| `recordings/` | 7 real screen recordings (~4 min total, played at 0.5× speed for readability) captured against the actual running demo, referenced by the 6 "DEMO" slides + the bonus Web UI tour. |
 | `assets/posters/` | Poster frames for each recording (also used as the video's paused/loading state). |
 | `scripts/` | Tooling used to build/QA/export the deck, plus the Playwright recording harness (`scripts/record/`). |
 | `pptx/build_pptx.py` | Regenerates the `.pptx` from scratch (python-pptx). |
@@ -49,8 +49,13 @@ cd .. && npm run dev
 cd presentation
 node scripts/record/05-worker-restart-durability.mjs
 
-# 3. Regenerate a poster frame (pick a timestamp that shows the interesting moment)
-ffmpeg -y -ss 10.5 -i recordings/05-worker-restart-durability.mp4 \
+# 3. Slow it to 0.5x speed (all recordings in this deck play at half speed for readability)
+ffmpeg -y -i recordings/05-worker-restart-durability.mp4 -filter:v "setpts=2.0*PTS" \
+  -c:v libx264 -preset medium -crf 19 -pix_fmt yuv420p -movflags +faststart \
+  /tmp/slowed.mp4 && mv /tmp/slowed.mp4 recordings/05-worker-restart-durability.mp4
+
+# 4. Regenerate a poster frame (pick a timestamp that shows the interesting moment)
+ffmpeg -y -ss 21 -i recordings/05-worker-restart-durability.mp4 \
   -frames:v 1 -q:v 3 assets/posters/05-worker-restart-durability.jpg
 ```
 
@@ -59,15 +64,18 @@ Playwright is a stripped-down webm/vp8-only build and can't produce the `.mp4` f
 
 ## Demo recordings reference
 
-| File | Slide | Shows |
-| --- | --- | --- |
-| `01-submit-and-progress.mp4` | Demo 1/6 | Submitting via the real form; live stage timeline via polling |
-| `02-human-review-signals.mp4` | Demo 2/6 | Indefinite wait signal; request-info ↔ provide-info round trip; approve → paid |
-| `03-transient-retry.mp4` | Demo 3/6 | Live attempt counter climbing on a retry policy, zero custom retry code |
-| `04-permanent-failure-recovery.mp4` | Demo 4/6 | Non-retryable failure parks the workflow; UI-driven recovery signal |
-| `05-worker-restart-durability.mp4` | Demo 5/6 | **The centerpiece** — kill & restart the real worker process mid-claim; state survives |
-| `06-cancellation-saga.mp4` | Demo 6/6 | Cancellation triggers saga-style compensations, visible in the event log |
-| `07-temporal-web-ui-tour.mp4` | Bonus | Search-attribute query, live `getClaimState` query, the fraud child workflow — all in Temporal's own Web UI |
+All recordings play at **0.5× speed** (the source capture is double-speed relative to these
+durations) so the audience has time to read the UI as it updates.
+
+| File | Duration | Slide | Shows |
+| --- | --- | --- | --- |
+| `01-submit-and-progress.mp4` | 0:20 | Demo 1/6 | Submitting via the real form; live stage timeline via polling |
+| `02-human-review-signals.mp4` | 0:27 | Demo 2/6 | Indefinite wait signal; request-info ↔ provide-info round trip; approve → paid |
+| `03-transient-retry.mp4` | 0:23 | Demo 3/6 | Live attempt counter climbing on a retry policy, zero custom retry code |
+| `04-permanent-failure-recovery.mp4` | 0:29 | Demo 4/6 | Non-retryable failure parks the workflow; UI-driven recovery signal |
+| `05-worker-restart-durability.mp4` | 1:06 | Demo 5/6 | **The centerpiece** — kill & restart the real worker process mid-claim; state survives |
+| `06-cancellation-saga.mp4` | 0:20 | Demo 6/6 | Cancellation triggers saga-style compensations, visible in the event log |
+| `07-temporal-web-ui-tour.mp4` | 0:29 | Bonus | Search-attribute query, live `getClaimState` query, the fraud child workflow — all in Temporal's own Web UI |
 
 All 7 were captured against the real running stack (no staging/mocking) — worker generations,
 timestamps and query results in the videos are genuine.
