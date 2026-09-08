@@ -1,6 +1,16 @@
 // Demo 4/6 — Payment fails permanently (non-retryable). The workflow parks instead of crashing,
 // and an operator recovers it with a signal from the dashboard.
-import { record, createClaim, waitForClaim, setAdjuster, pause, WEB_BASE } from '../record-helpers.mjs';
+import {
+  record,
+  createClaim,
+  waitForClaim,
+  setAdjuster,
+  pause,
+  installCursorOverlay,
+  smoothScrollTo,
+  clickWithEmphasis,
+  WEB_BASE,
+} from '../record-helpers.mjs';
 
 const { workflowId } = await createClaim({
   policyholder: 'Ade Balogun',
@@ -18,10 +28,11 @@ await waitForClaim(workflowId, (d) => d.state?.phase === 'awaiting-review', { ti
 
 await record('04-permanent-failure-recovery', async (page) => {
   await page.goto(`${WEB_BASE}/claims/${workflowId}`, { waitUntil: 'networkidle' });
+  await installCursorOverlay(page);
   await setAdjuster(page, 'Jordan Ellis');
   await pause(page, 1200);
 
-  await page.getByRole('button', { name: 'Approve claim' }).click();
+  await clickWithEmphasis(page, page.getByRole('button', { name: 'Approve claim' }));
   await pause(page, 500);
 
   // The settlement timer runs, then the payment activity throws a non-retryable failure and the
@@ -29,12 +40,14 @@ await record('04-permanent-failure-recovery', async (page) => {
   await waitForClaim(workflowId, (d) => d.state?.phase === 'blocked-on-failure', { timeoutMs: 30_000 });
   await pause(page, 1000);
   await page.reload({ waitUntil: 'networkidle' });
-  await page.getByText('This claim is waiting for you').scrollIntoViewIfNeeded();
+  await installCursorOverlay(page);
+  await smoothScrollTo(page, page.getByText('This claim is waiting for you'));
   await pause(page, 3000);
 
-  await page
-    .getByRole('button', { name: 'Retry stage & clear the simulated fault' })
-    .click();
+  await clickWithEmphasis(
+    page,
+    page.getByRole('button', { name: 'Retry stage & clear the simulated fault' }),
+  );
   await pause(page, 600);
   await waitForClaim(workflowId, (d) => d.state?.phase === 'completed', { timeoutMs: 20_000 });
   await pause(page, 3000);

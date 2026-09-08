@@ -105,18 +105,17 @@ durations) so the audience has time to read the UI as it updates.
 
 | File | Duration | Slide | Shows |
 | --- | --- | --- | --- |
-| `01-submit-and-progress.mp4` | 0:20 | Demo 1/6 | Submitting via the real form; live stage timeline via polling |
+| `01-submit-and-progress.mp4` | 0:24 | Demo 1/6 | Submitting via the real form (emphasized click); live stage timeline via polling |
 | `02-human-review-signals.mp4` | 0:56 | Demo 2/6 | Indefinite wait signal; request-info ↔ provide-info round trip (typed on camera at a readable pace, smooth scroll, emphasized clicks); approve → paid |
 | `03-transient-retry.mp4` | 0:23 | Demo 3/6 | Live attempt counter climbing on a retry policy, zero custom retry code |
-| `04-permanent-failure-recovery.mp4` | 0:29 | Demo 4/6 | Non-retryable failure parks the workflow; UI-driven recovery signal |
-| `05-worker-restart-durability.mp4` | 1:06 | Demo 5/6 | **The centerpiece** — kill & restart the real worker process mid-claim; state survives |
-| `06-cancellation-saga.mp4` | 0:20 | Demo 6/6 | Cancellation triggers saga-style compensations, visible in the event log |
-| `07-temporal-web-ui-tour.mp4` | 0:29 | Bonus | Search-attribute query, live `getClaimState` query, the fraud child workflow — all in Temporal's own Web UI |
+| `04-permanent-failure-recovery.mp4` | 0:35 | Demo 4/6 | Non-retryable failure parks the workflow; UI-driven recovery signal (smooth scroll, emphasized clicks) |
+| `05-worker-restart-durability.mp4` | 1:14 | Demo 5/6 | **The centerpiece** — kill & restart the real worker process mid-claim; state survives (smooth scroll, emphasized clicks) |
+| `06-cancellation-saga.mp4` | 0:24 | Demo 6/6 | Cancellation triggers saga-style compensations, visible in the event log (emphasized click) |
+| `07-temporal-web-ui-tour.mp4` | 0:33 | Bonus | Search-attribute query, live `getClaimState` query, the fraud child workflow — all in Temporal's own Web UI (emphasized clicks) |
 
 All 7 were captured against the real running stack (no staging/mocking) — worker generations,
-timestamps and query results in the videos are genuine. Demo 2 currently is the reference example
-for the smooth-scroll/click-emphasis treatment; the same helpers can be applied to the others by
-following the pattern in `scripts/record/02-human-review-signals.mjs`.
+timestamps and query results in the videos are genuine. All 7 now use the smooth-scroll/
+click-emphasis treatment described above (see `scripts/record/*.mjs`).
 
 ## Regenerating the PDF / pptx after editing the HTML deck
 

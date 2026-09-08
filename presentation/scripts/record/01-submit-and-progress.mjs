@@ -1,15 +1,26 @@
 // Demo 1/6 — Submit a claim through the real dashboard form, watch it progress live.
-import { record, waitForClaim, setAdjuster, pause, WEB_BASE } from '../record-helpers.mjs';
+import {
+  record,
+  waitForClaim,
+  setAdjuster,
+  pause,
+  installCursorOverlay,
+  smoothScrollTo,
+  clickWithEmphasis,
+  WEB_BASE,
+} from '../record-helpers.mjs';
 
 await record('01-submit-and-progress', async (page) => {
   await page.goto(`${WEB_BASE}/`, { waitUntil: 'networkidle' });
+  await installCursorOverlay(page);
   await setAdjuster(page, 'Jordan Ellis');
   await pause(page, 800);
 
   // The form is already pre-filled with a realistic "happy path" sample claim.
-  await page.getByRole('button', { name: 'Submit claim' }).scrollIntoViewIfNeeded();
+  const submitBtn = page.getByRole('button', { name: 'Submit claim' });
+  await smoothScrollTo(page, submitBtn);
   await pause(page, 600);
-  await page.getByRole('button', { name: 'Submit claim' }).click();
+  await clickWithEmphasis(page, submitBtn);
 
   // Wait for the redirect to the claim detail page.
   await page.waitForURL(/\/claims\//, { timeout: 15_000 });

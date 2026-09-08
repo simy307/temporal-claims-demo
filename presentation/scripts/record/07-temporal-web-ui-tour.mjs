@@ -1,6 +1,13 @@
 // Bonus demo — a tour of the real Temporal Web UI: the workflow list with a search-attribute
 // query, the event history timeline, a live getClaimState query, and the fraud child workflow.
-import { record, createClaim, waitForClaim, pause } from '../record-helpers.mjs';
+import {
+  record,
+  createClaim,
+  waitForClaim,
+  pause,
+  installCursorOverlay,
+  clickWithEmphasis,
+} from '../record-helpers.mjs';
 
 const TEMPORAL_UI = 'http://localhost:8233';
 
@@ -24,22 +31,25 @@ await record('07-temporal-web-ui-tour', async (page) => {
     )}`,
     { waitUntil: 'load' },
   );
+  await installCursorOverlay(page);
   await pause(page, 3000);
 
   // 2. Open the fresh claim's Timeline — shows every activity, retry, timer and the child workflow.
   await page.goto(`${TEMPORAL_UI}/namespaces/default/workflows/${workflowId}/${runId}`, {
     waitUntil: 'load',
   });
+  await installCursorOverlay(page);
   await pause(page, 3500);
 
   // 3. Run the getClaimState query directly against the workflow — no custom UI involved.
-  await page.getByRole('tab', { name: 'Queries' }).click();
+  await clickWithEmphasis(page, page.getByRole('tab', { name: 'Queries' }));
   await pause(page, 1000);
-  await page.getByRole('button', { name: /Run Query|Refresh Query/ }).click();
+  await clickWithEmphasis(page, page.getByRole('button', { name: /Run Query|Refresh Query/ }));
   await pause(page, 3500);
 
   // 4. Jump to the fraud-check child workflow — its own history, own timeline.
   const childId = `fraud-check-${workflowId.replace('claim-', '')}`;
   await page.goto(`${TEMPORAL_UI}/namespaces/default/workflows/${childId}`, { waitUntil: 'load' });
+  await installCursorOverlay(page);
   await pause(page, 3500);
 });

@@ -7,6 +7,9 @@ import {
   waitForClaim,
   setAdjuster,
   pause,
+  installCursorOverlay,
+  smoothScrollTo,
+  clickWithEmphasis,
   WEB_BASE,
   API_BASE,
 } from '../record-helpers.mjs';
@@ -36,19 +39,22 @@ console.log('worker before:', workerBefore);
 await record('05-worker-restart-durability', async (page) => {
   // 1. Approve, then let payment fail permanently — the claim parks, blocked.
   await page.goto(`${WEB_BASE}/claims/${workflowId}`, { waitUntil: 'networkidle' });
+  await installCursorOverlay(page);
   await setAdjuster(page, 'Jordan Ellis');
   await pause(page, 1000);
-  await page.getByRole('button', { name: 'Approve claim' }).click();
+  await clickWithEmphasis(page, page.getByRole('button', { name: 'Approve claim' }));
   await waitForClaim(workflowId, (d) => d.state?.phase === 'blocked-on-failure', { timeoutMs: 30_000 });
   await page.reload({ waitUntil: 'networkidle' });
-  await page.getByText('WORKFLOW BLOCKED', { exact: false }).scrollIntoViewIfNeeded();
+  await installCursorOverlay(page);
+  await smoothScrollTo(page, page.getByText('WORKFLOW BLOCKED', { exact: false }));
   await pause(page, 2500);
 
   // 2. Go to the dashboard and kill the worker process while the claim is blocked mid-flight.
   await page.goto(`${WEB_BASE}/`, { waitUntil: 'networkidle' });
-  await page.getByText('Worker', { exact: true }).scrollIntoViewIfNeeded();
+  await installCursorOverlay(page);
+  await smoothScrollTo(page, page.getByText('Worker', { exact: true }));
   await pause(page, 1200);
-  await page.getByRole('button', { name: 'Kill & restart worker' }).click();
+  await clickWithEmphasis(page, page.getByRole('button', { name: 'Kill & restart worker' }));
   await pause(page, 1500);
 
   // 3. Wait for the new worker process (a new generation) to come back up and start polling again.
@@ -64,13 +70,15 @@ await record('05-worker-restart-durability', async (page) => {
 
   // 4. Go back to the claim: it is untouched — still blocked, history intact, nothing lost.
   await page.goto(`${WEB_BASE}/claims/${workflowId}`, { waitUntil: 'networkidle' });
-  await page.getByText('WORKFLOW BLOCKED', { exact: false }).scrollIntoViewIfNeeded();
+  await installCursorOverlay(page);
+  await smoothScrollTo(page, page.getByText('WORKFLOW BLOCKED', { exact: false }));
   await pause(page, 3000);
 
   // 5. Recover it — proving the whole thing still works end to end after the restart.
-  await page
-    .getByRole('button', { name: 'Retry stage & clear the simulated fault' })
-    .click();
+  await clickWithEmphasis(
+    page,
+    page.getByRole('button', { name: 'Retry stage & clear the simulated fault' }),
+  );
   await pause(page, 600);
   await waitForClaim(workflowId, (d) => d.state?.phase === 'completed', { timeoutMs: 20_000 });
   await pause(page, 3000);
