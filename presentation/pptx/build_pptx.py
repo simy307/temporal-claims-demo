@@ -488,11 +488,15 @@ cards_slide("What came back", "The improved prompt  (condensed)", [
    notes="Full text is in the appendix. The point is the shape, not the word count.")
 
 statement_slide(
-    "The thesis of this whole talk",
-    [("Temporal doesn't reward clever prompts.\n", False),
-     ("It rewards being ", False), ("explicit about failure.", True)],
-    "Name the retries. Name the waits. Name what must survive a crash. The rest is implementation detail.",
-    notes="Slow down here. Everything after is proof.",
+    "The point of this whole talk",
+    [("Don't be overwhelmed.\n", False),
+     ("You don't need to spell everything out ", False),
+     ("to see what Temporal can do for you.", True)],
+    "A sharper prompt makes for a sharper demo \u2014 but retries, signals, queries and durability "
+    "are primitives Temporal gives you either way.",
+    notes="Slow down here. The refined prompt made this specific demo cleaner, but the takeaway "
+          "isn't 'write a perfect spec or don't bother.' Even the rough first draft would have "
+          "gotten a working workflow with retries and durability for free.",
 )
 
 section_slide("02", "What Got Built",
