@@ -1,0 +1,660 @@
+/*
+ * Custom "Temporal-inspired" reveal.js theme.
+ *
+ * Deliberately echoes the color language of the claims-console demo app (deep navy background,
+ * purple/blue accent gradient, the same semantic status colors) so the talk and the live demo feel
+ * like one continuous visual world.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #0a0c16;
+  --bg-alt: #10132a;
+  --card: #141828;
+  --card-border: #232a41;
+  --text: #e6e9f5;
+  --muted: #9aa2c0;
+  --accent: #7c5cff;
+  --accent-2: #4c9ffe;
+  --accent-soft: rgba(124, 92, 255, 0.14);
+  --success: #34d399;
+  --warning: #fbbf24;
+  --error: #f87171;
+  --waiting: #38bdf8;
+  --r-main-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --r-code-font: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+
+html.reveal-full-page,
+.reveal-viewport {
+  background:
+    radial-gradient(1400px 700px at 8% -10%, #1b1e3a 0%, transparent 60%),
+    radial-gradient(1100px 600px at 100% 0%, #2a1c47 0%, transparent 55%),
+    var(--bg);
+}
+
+.reveal {
+  font-family: var(--r-main-font);
+  color: var(--text);
+  font-size: 34px;
+  font-weight: 400;
+}
+
+.reveal .slides section {
+  text-align: left;
+  height: 100%;
+}
+
+.reveal .slides {
+  text-align: left;
+}
+
+/* ------------------------------------------------------------------ typography */
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4 {
+  font-family: var(--r-main-font);
+  text-transform: none;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-bottom: 0.5em;
+}
+
+.reveal h1 {
+  font-size: 1.9em;
+  font-weight: 800;
+}
+
+.reveal h2 {
+  font-size: 1.5em;
+  font-weight: 700;
+}
+
+.reveal h3 {
+  font-size: 1.05em;
+  font-weight: 700;
+  color: var(--accent-2);
+}
+
+.reveal p {
+  line-height: 1.5;
+  margin-bottom: 0.6em;
+}
+
+.reveal ul,
+.reveal ol {
+  display: block;
+  margin-left: 0.4em;
+}
+
+.reveal li {
+  margin-bottom: 0.35em;
+  line-height: 1.45;
+}
+
+.reveal a {
+  color: var(--accent-2);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(76, 159, 254, 0.4);
+}
+
+.reveal code {
+  font-family: var(--r-code-font);
+  background: rgba(124, 92, 255, 0.14);
+  color: #cbbcff;
+  border-radius: 5px;
+  padding: 0.05em 0.35em;
+  font-size: 0.85em;
+}
+
+.reveal pre {
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  width: 100%;
+}
+
+.reveal pre code {
+  font-family: var(--r-code-font);
+  background: #0d1020;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 0.9em 1.1em;
+  color: #d6dcf5;
+  max-height: none;
+}
+
+.reveal mark {
+  background: linear-gradient(180deg, transparent 55%, rgba(124, 92, 255, 0.45) 55%);
+  color: #fff;
+  padding: 0 0.05em;
+}
+
+.reveal .progress {
+  color: var(--accent);
+  height: 4px;
+}
+
+.reveal .controls {
+  color: var(--accent-2);
+}
+
+/* ------------------------------------------------------------------ brand mark */
+
+.brand-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 0.9em;
+  height: 0.9em;
+  border-radius: 0.28em;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  font-size: 1em;
+  color: #fff;
+  vertical-align: -0.12em;
+}
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+  font-weight: 700;
+  color: var(--muted);
+  font-size: 0.42em;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin-bottom: 0.6em;
+}
+
+/* ------------------------------------------------------------------ title slide */
+
+.title-slide {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0.25em;
+}
+
+.title-slide .kicker {
+  font-size: 0.42em;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--accent-2);
+  font-weight: 700;
+  margin-bottom: 0.3em;
+}
+
+.title-slide h1 {
+  font-size: 2.05em;
+  font-weight: 800;
+  line-height: 1.08;
+  background: linear-gradient(120deg, #ffffff 30%, #cdbfff 75%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  max-width: 12em;
+}
+
+.title-slide .subtitle {
+  font-size: 0.62em;
+  color: var(--muted);
+  max-width: 11em;
+  margin-top: 0.2em;
+  font-weight: 500;
+}
+
+.title-slide .meta {
+  margin-top: 1.4em;
+  font-size: 0.42em;
+  color: var(--muted);
+  display: flex;
+  gap: 1.4em;
+  border-top: 1px solid var(--card-border);
+  padding-top: 0.9em;
+  width: 100%;
+}
+
+.title-slide .meta strong {
+  color: var(--text);
+  display: block;
+  font-size: 1.1em;
+}
+
+/* ------------------------------------------------------------------ section divider slide */
+
+.section-slide {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.section-slide .section-num {
+  font-family: var(--r-code-font);
+  font-size: 5.5em;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  line-height: 1;
+  opacity: 0.9;
+}
+
+.section-slide h1 {
+  font-size: 1.7em;
+  margin-top: 0.1em;
+}
+
+.section-slide .section-sub {
+  color: var(--muted);
+  font-size: 0.55em;
+  max-width: 14em;
+}
+
+/* ------------------------------------------------------------------ cards / grids */
+
+.card {
+  background: linear-gradient(180deg, #161a2c, rgba(18, 21, 34, 0.4));
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 0.7em 0.9em;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+.grid {
+  display: grid;
+  gap: 0.55em;
+  width: 100%;
+}
+
+.grid.cols-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.grid.cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid.cols-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.card h4 {
+  font-size: 0.5em;
+  color: var(--accent-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.4em;
+}
+
+.card p,
+.card li {
+  font-size: 0.48em;
+  color: var(--muted);
+  margin-bottom: 0.2em;
+}
+
+.card.tone-accent {
+  border-color: rgba(124, 92, 255, 0.4);
+  background: linear-gradient(180deg, rgba(124, 92, 255, 0.12), rgba(18, 21, 34, 0.3));
+}
+
+.card.tone-success {
+  border-color: rgba(52, 211, 153, 0.4);
+}
+.card.tone-warning {
+  border-color: rgba(251, 191, 36, 0.4);
+}
+.card.tone-error {
+  border-color: rgba(248, 113, 113, 0.4);
+}
+.card.tone-waiting {
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+/* ------------------------------------------------------------------ badges / pills */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.15em 0.55em;
+  border-radius: 999px;
+  font-size: 0.42em;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+}
+
+.badge.b-accent {
+  color: #cdbfff;
+  background: rgba(124, 92, 255, 0.16);
+  border-color: rgba(124, 92, 255, 0.4);
+}
+.badge.b-success {
+  color: var(--success);
+  background: rgba(52, 211, 153, 0.14);
+  border-color: rgba(52, 211, 153, 0.4);
+}
+.badge.b-warning {
+  color: var(--warning);
+  background: rgba(251, 191, 36, 0.14);
+  border-color: rgba(251, 191, 36, 0.4);
+}
+.badge.b-error {
+  color: var(--error);
+  background: rgba(248, 113, 113, 0.14);
+  border-color: rgba(248, 113, 113, 0.4);
+}
+.badge.b-waiting {
+  color: var(--waiting);
+  background: rgba(56, 189, 248, 0.14);
+  border-color: rgba(56, 189, 248, 0.4);
+}
+.badge.b-muted {
+  color: var(--muted);
+  background: rgba(154, 162, 192, 0.12);
+  border-color: rgba(154, 162, 192, 0.3);
+}
+
+/* ------------------------------------------------------------------ prompt / terminal window */
+
+.window {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  background: #0d1020;
+}
+
+.window-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.5em 0.7em;
+  background: #151934;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.window-bar .dot {
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  background: #3a4160;
+}
+
+.window-bar .label {
+  margin-left: 0.5em;
+  font-size: 0.4em;
+  color: var(--muted);
+  font-family: var(--r-code-font);
+}
+
+.window-body {
+  padding: 0.75em 1em;
+  font-family: var(--r-code-font);
+  font-size: 0.44em;
+  line-height: 1.55;
+  color: #d6dcf5;
+  max-height: 520px;
+  overflow: hidden;
+}
+
+.window-body .prompt-marker {
+  color: var(--accent-2);
+}
+
+.prompt-quote {
+  font-family: var(--r-code-font);
+  font-size: 0.46em;
+  line-height: 1.6;
+  color: #d6dcf5;
+}
+
+/* ------------------------------------------------------------------ diagram (architecture) */
+
+.diagram {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 0.5em;
+  width: 100%;
+  margin: 0.4em 0;
+}
+
+.diagram-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  flex: 1;
+}
+
+.diagram-box {
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  background: var(--card);
+  padding: 0.5em 0.6em;
+  font-size: 0.4em;
+  text-align: center;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.diagram-box.accent {
+  border-color: rgba(124, 92, 255, 0.5);
+  background: linear-gradient(180deg, rgba(124, 92, 255, 0.16), rgba(18, 21, 34, 0.4));
+}
+
+.diagram-box small {
+  display: block;
+  color: var(--muted);
+  font-weight: 400;
+  margin-top: 0.2em;
+  font-size: 0.85em;
+}
+
+.diagram-arrow {
+  align-self: center;
+  color: var(--accent-2);
+  font-size: 0.7em;
+  opacity: 0.8;
+}
+
+/* ------------------------------------------------------------------ timeline (claim lifecycle) */
+
+.stage-rail {
+  display: flex;
+  gap: 0.35em;
+  width: 100%;
+  margin-top: 0.5em;
+  flex-wrap: wrap;
+}
+
+.stage-chip {
+  flex: 1;
+  min-width: 8.5em;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 0.4em 0.5em;
+  background: var(--card);
+}
+
+.stage-chip .stage-name {
+  font-size: 0.4em;
+  font-weight: 700;
+  color: var(--text);
+  display: block;
+}
+
+.stage-chip .stage-tag {
+  font-size: 0.34em;
+  color: var(--accent-2);
+  font-family: var(--r-code-font);
+  display: block;
+  margin-top: 0.25em;
+}
+
+/* ------------------------------------------------------------------ demo cut-in slides */
+
+.demo-slide {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.demo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.3em;
+}
+
+.demo-video-frame {
+  flex: 1;
+  border-radius: 16px;
+  border: 1px solid rgba(124, 92, 255, 0.4);
+  background: #05060c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.demo-video-frame video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.demo-placeholder {
+  text-align: center;
+  color: var(--muted);
+}
+
+.demo-placeholder .play-icon {
+  font-size: 2.2em;
+  color: var(--accent);
+  margin-bottom: 0.2em;
+}
+
+.demo-placeholder .file-hint {
+  font-family: var(--r-code-font);
+  font-size: 0.4em;
+  margin-top: 0.4em;
+  color: #6f7794;
+}
+
+.demo-talking-points {
+  margin-top: 0.4em;
+  font-size: 0.42em;
+  color: var(--muted);
+  display: flex;
+  gap: 1em;
+  flex-wrap: wrap;
+}
+
+.demo-talking-points span {
+  border-left: 2px solid var(--accent);
+  padding-left: 0.4em;
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------------ big statement / quote slides */
+
+.statement-slide {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.statement-slide .statement {
+  font-size: 1.3em;
+  font-weight: 700;
+  line-height: 1.25;
+  max-width: 13em;
+}
+
+.statement-slide .statement .accent-text {
+  background: linear-gradient(120deg, var(--accent) 20%, var(--accent-2) 80%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.statement-slide .attribution {
+  margin-top: 0.8em;
+  font-size: 0.45em;
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------------------ footer / slide furniture */
+
+.slide-kicker {
+  font-size: 0.4em;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--accent-2);
+  font-weight: 700;
+  margin-bottom: 0.2em;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9em;
+  align-items: start;
+}
+
+.checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4em;
+  font-size: 0.52em;
+}
+
+.checklist li .check {
+  color: var(--success);
+  font-weight: 800;
+  flex: 0 0 auto;
+}
+
+/*
+ * Flexbox gotcha: a bare text node after a flex sibling becomes an anonymous flex item whose
+ * automatic minimum width is its max-content size (the whole line, unwrapped) as long as overflow
+ * is visible. Wrapping the label in its own element with `min-width: 0` lets it actually shrink and
+ * wrap inside the flex row instead of overflowing past the slide edge.
+ */
+.checklist li .label {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 0.6em;
+}
+
+.center {
+  text-align: center;
+}
+
+.reveal .slide-number {
+  color: var(--muted);
+  background: transparent;
+}

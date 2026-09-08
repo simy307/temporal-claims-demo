@@ -1,0 +1,15 @@
+{
+  "name": "temporal-talk-slides",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Slides for 'Lifting the Veil: How to Match Your Use Case and Temporal'",
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "qa": "node scripts/shoot-slides.mjs",
+    "pdf": "node scripts/export-pdf.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0",
+    "reveal.js": "^5.1.0"
+  }
+}

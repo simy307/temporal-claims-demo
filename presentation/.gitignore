@@ -1,0 +1,5 @@
+node_modules/
+qa-screenshots/
+pdf-preview/
+recordings/*.mp4
+recordings/*.webm

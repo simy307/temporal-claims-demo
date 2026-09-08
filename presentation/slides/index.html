@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <title>Lifting the Veil — How to Match Your Use Case and Temporal</title>
+
+    <link rel="stylesheet" href="../node_modules/reveal.js/dist/reset.css" />
+    <link rel="stylesheet" href="../node_modules/reveal.js/dist/reveal.css" />
+    <link rel="stylesheet" href="theme.css" />
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <!-- ============================================================ -->
+        <!-- 1. TITLE                                                       -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="title-slide">
+            <div class="brand-row"><span class="brand-mark">◈</span> Temporal · Engineering Talk</div>
+            <div class="kicker">A live-coded case study</div>
+            <h1>Lifting the Veil</h1>
+            <div class="subtitle">How to match your use case &amp; Temporal — told through one prompt,
+              one AI coding agent, and one insurance claim.</div>
+            <div class="meta">
+              <div><strong>~25 min</strong>talk length</div>
+              <div><strong>1</strong>prompt → full app</div>
+              <div><strong>0</strong>databases used</div>
+            </div>
+          </div>
+          <aside class="notes">
+            Welcome / intro yourself. Hook: "How many of you have looked at Temporal's docs and
+            thought — this looks powerful, but I genuinely don't know if MY problem needs it?"
+            That's the veil we're lifting today. Not a feature tour — a story about turning a vague
+            idea into a precise Temporal spec, and what happens when you do.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 2. THE REAL QUESTION                                          -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="statement-slide">
+            <div class="slide-kicker">The question everyone actually has</div>
+            <div class="statement">
+              "This looks powerful. But is it right for
+              <span class="accent-text">my</span> use case?"
+            </div>
+            <div class="attribution">— every engineer's first honest reaction to Temporal</div>
+          </div>
+          <aside class="notes">
+            Temporal's pitch is abstract until it touches a concrete, messy business process you
+            actually own. The fastest way to find out if it fits is to try to build the thing — and
+            the fastest way to build the thing today is to hand it to a coding agent. Which raises a
+            new problem: coding agents are only as good as the spec you give them.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 3. THE EXPERIMENT                                             -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="slide-kicker">The experiment</div>
+          <h1>I asked AI a vague prompt.<br />Here's what happened.</h1>
+          <p class="muted small" style="max-width: 26em; margin-top: 0.6em">
+            Not "here is a finished spec, build it." A genuinely rough, one-paragraph idea — the kind
+            you'd type into a chat box on your commute. Then I watched what it took to turn that into
+            something worth demoing to engineers.
+          </p>
+          <div class="grid cols-3" style="margin-top: 1em">
+            <div class="card tone-accent">
+              <h4>Step 1</h4>
+              <p>Write the rough idea, badly, on purpose</p>
+            </div>
+            <div class="card tone-accent">
+              <h4>Step 2</h4>
+              <p>Ask AI to turn it into a real spec</p>
+            </div>
+            <div class="card tone-accent">
+              <h4>Step 3</h4>
+              <p>Hand that spec to a coding agent &amp; build it</p>
+            </div>
+          </div>
+          <aside class="notes">
+            Set up the three-act structure of the talk. Emphasize this is reproducible — anyone in
+            the room can do this exact exercise on their own use case this afternoon.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 4. AGENDA                                                     -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="slide-kicker">Agenda</div>
+          <h1>Where we're headed</h1>
+          <ul class="checklist" style="margin-top: 0.8em">
+            <li><span class="check">01</span>&nbsp;<span class="label">The prompt experiment — before &amp; after</span></li>
+            <li><span class="check">02</span>&nbsp;<span class="label">What actually got built (architecture + lifecycle)</span></li>
+            <li><span class="check">03</span>&nbsp;<span class="label">Live demo — 6 short cuts, real failures, real recovery</span></li>
+            <li><span class="check">04</span>&nbsp;<span class="label">Lessons — how to match your use case to Temporal</span></li>
+            <li><span class="check">05</span>&nbsp;<span class="label">Resources &amp; how to try this yourself</span></li>
+          </ul>
+          <aside class="notes">
+            Quick roadmap slide. Keep this brief — 15-20 seconds, tops.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SECTION DIVIDER: PART 1                                       -->
+        <!-- ============================================================ -->
+        <section data-background-color="#0a0c16">
+          <div class="section-slide">
+            <div class="section-num">01</div>
+            <h1>The Prompt Experiment</h1>
+            <div class="section-sub">Before and after — and why the gap between them is the whole
+              lesson.</div>
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 5. THE ORIGINAL PROMPT                                        -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="slide-kicker">What I actually typed</div>
+          <h2>My first prompt (verbatim)</h2>
+          <div class="window" style="margin-top: 0.5em">
+            <div class="window-bar">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+              <span class="label">chat — untitled idea</span>
+            </div>
+            <div class="window-body">
+              <span class="prompt-marker">&gt;</span> I want to see what temporal workflows can do for
+              me. Create me a project with a UI to track workflow progress and for me to interact with
+              the workflows. Scenario: Claim process for an insurance company. No database, just get
+              state and progress from temporal itself. Use a local temporal instance. Implement any
+              cool ideas you can think of. Make sure there is at lease 1 wait for signal from the UI.
+              Use local storage so the UI persists on refresh.
+            </div>
+          </div>
+          <aside class="notes">
+            Read it out loud, typo and all ("at lease 1"). This is intentionally the kind of prompt
+            real engineers write — enthusiastic, directionally correct, structurally thin.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 6. WHAT'S MISSING                                             -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="slide-kicker">Read it again, like a coding agent has to</div>
+          <h2>Five things it never says</h2>
+          <div class="two-col" style="margin-top: 0.5em">
+            <div class="prompt-quote muted">
+              "…track workflow progress… interact with the workflows… no database… any cool ideas…
+              at lease 1 wait for signal… local storage so it persists…"
+            </div>
+            <ul class="checklist">
+              <li><span class="check">?</span>&nbsp;<span class="label">Which failures are transient vs. permanent?</span></li>
+              <li><span class="check">?</span>&nbsp;<span class="label">What must never be lost on a crash?</span></li>
+              <li><span class="check">?</span>&nbsp;<span class="label">Where's the API/worker/UI boundary?</span></li>
+              <li><span class="check">?</span>&nbsp;<span class="label">What does "interact with" mean — signals? updates?</span></li>
+              <li><span class="check">?</span>&nbsp;<span class="label">"Cool ideas" = infinite scope, zero acceptance criteria</span></li>
+            </ul>
+          </div>
+          <p class="muted small" style="margin-top: 0.7em">
+            None of this makes the prompt bad — it's a perfectly normal first draft. It just means the
+            agent (or a human architect) has to invent Temporal-specific decisions with no guidance.
+          </p>
+          <aside class="notes">
+            The point isn't "this prompt is bad," it's "this prompt under-specifies exactly the
+            decisions that make or break a durable-execution design." That's the veil.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 7. ASKING AI TO IMPROVE THE PROMPT (META STEP)                -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="slide-kicker">The move that actually matters</div>
+          <h1>I didn't fix the prompt myself.<br />I asked AI to fix it.</h1>
+          <div class="grid cols-2" style="margin-top: 1em">
+            <div class="card tone-accent">
+              <h4>Why not write the spec by hand?</h4>
+              <p>Because "what should a good Temporal spec contain" is itself a question worth
+                delegating — the model already knows the shape of retries, signals, queries,
+                sagas.</p>
+            </div>
+            <div class="card tone-accent">
+              <h4>What I asked for</h4>
+              <p>"Would this be good for a coding-agent prompt?" — then iterated until the answer
+                covered architecture, failure modes, and UI/UX explicitly.</p>
+            </div>
+          </div>
+          <aside class="notes">
+            This is the generalizable trick: use the model to interrogate its own upcoming task. It's
+            cheap, fast, and it front-loads the Temporal-specific vocabulary (retry policy, signal,
+            saga, search attribute) that a vague prompt never would have surfaced.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 8. THE IMPROVED PROMPT                                        -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="slide-kicker">What came back</div>
+          <h2>The improved prompt <span class="badge b-accent">condensed</span></h2>
+          <div class="grid cols-2" style="margin-top: 0.5em">
+            <div class="card">
+              <h4>Stack &amp; architecture, named explicitly</h4>
+              <p>Temporal TS SDK · local dev server · NestJS API + worker · React + TS UI · Docker
+                Compose · <mark>separate</mark> workflow / activity / client / API / UI layers</p>
+            </div>
+            <div class="card">
+              <h4>Durability requirements, named explicitly</h4>
+              <p><mark>retry policies</mark> per activity · <mark>at least one timer</mark> ·
+                <mark>a child workflow</mark> · <mark>signals</mark> for every human action ·
+                <mark>queries</mark> for state/progress · <mark>cancellation</mark> handling ·
+                failure recovery path</p>
+            </div>
+            <div class="card">
+              <h4>The claim lifecycle, spelled out</h4>
+              <p>9 named stages from submission to payout — not "any cool ideas," a concrete process
+                to map onto primitives</p>
+            </div>
+            <div class="card">
+              <h4>Definition of done</h4>
+              <p>README, unit tests, <mark>one integration test</mark> that signals a real workflow
+                to completion, build/lint/test must pass before calling it finished</p>
+            </div>
+          </div>
+          <aside class="notes">
+            Full text is in the appendix slides at the end if anyone wants to read it verbatim. The
+            point of this slide is the shape, not the word count: every bullet here maps directly to a
+            Temporal primitive we'll see on screen in a few minutes.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 9. WHY THIS MATTERS (THESIS)                                   -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="statement-slide">
+            <div class="slide-kicker">The thesis of this whole talk</div>
+            <div class="statement">
+              Temporal doesn't reward clever prompts.
+              <br />It rewards being
+              <span class="accent-text">explicit about failure.</span>
+            </div>
+            <div class="attribution">Name the retries. Name the waits. Name what must survive a
+              crash. The rest is implementation detail.</div>
+          </div>
+          <aside class="notes">
+            This is the slide to slow down on. Everything after this is proof: here's what that
+            explicitness bought us, concretely, in a running app.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SECTION DIVIDER: PART 2                                       -->
+        <!-- ============================================================ -->
+        <section data-background-color="#0a0c16">
+          <div class="section-slide">
+            <div class="section-num">02</div>
+            <h1>What Got Built</h1>
+            <div class="section-sub">An insurance claims console where Temporal — not a database —
+              is the source of truth.</div>
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 10. ARCHITECTURE DIAGRAM                                      -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="slide-kicker">Architecture</div>
+          <h2>Four pieces, one source of truth</h2>
+          <div class="diagram" style="margin-top: 1em">
+            <div class="diagram-col">
+              <div class="diagram-box">React Dashboard<small>polling · localStorage prefs only</small></div>
+            </div>
+            <div class="diagram-arrow">→</div>
+            <div class="diagram-col">
+              <div class="diagram-box">NestJS API<small>Temporal client · REST facade</small></div>
+            </div>
+            <div class="diagram-arrow">→</div>
+            <div class="diagram-col">
+              <div class="diagram-box accent">Temporal Server<small>event history · task queue · visibility</small></div>
+            </div>
+            <div class="diagram-arrow">→</div>
+            <div class="diagram-col">
+              <div class="diagram-box">NestJS Worker<small>workflows + activities</small></div>
+            </div>
+          </div>
+          <div style="margin-top: 0.9em; display: flex; gap: 0.6em; align-items: center">
+            <span class="badge b-error">✕ no database, anywhere</span>
+            <span class="badge b-success">✓ Temporal event history is the state</span>
+            <span class="badge b-waiting">✓ localStorage = prefs + recent ids only</span>
+          </div>
+          <aside class="notes">
+            Walk left to right. The UI never talks to Temporal directly — only through the API. The
+            API never runs workflow/activity code — only the worker does. That separation was an
+            explicit ask in the improved prompt, and it's why the demo stays comprehensible.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 11. CLAIM LIFECYCLE MAPPED TO PRIMITIVES                       -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="slide-kicker">The business process</div>
+          <h2>Nine stages → nine Temporal decisions</h2>
+          <div class="stage-rail">
+            <div class="stage-chip"><span class="stage-name">1. Submitted</span><span class="stage-tag">workflow start</span></div>
+            <div class="stage-chip"><span class="stage-name">2. Validation</span><span class="stage-tag">activity + retry</span></div>
+            <div class="stage-chip"><span class="stage-name">3. Coverage check</span><span class="stage-tag">activity + retry</span></div>
+            <div class="stage-chip"><span class="stage-name">4. Damage assessment</span><span class="stage-tag">heartbeat + cancel</span></div>
+            <div class="stage-chip"><span class="stage-name">5. Fraud evaluation</span><span class="stage-tag">child workflow</span></div>
+            <div class="stage-chip"><span class="stage-name">6. Human review</span><span class="stage-tag">signal · waits forever</span></div>
+            <div class="stage-chip"><span class="stage-name">7. Decision</span><span class="stage-tag">saga: release/reserve</span></div>
+            <div class="stage-chip"><span class="stage-name">8. Payment</span><span class="stage-tag">durable timer + activity</span></div>
+            <div class="stage-chip"><span class="stage-name">9. Completed</span><span class="stage-tag">workflow result</span></div>
+          </div>
+          <p class="muted small" style="margin-top: 0.8em">
+            Every chip on this rail is a query result, live, from a running Temporal workflow — not a
+            hand-maintained progress bar.
+          </p>
+          <aside class="notes">
+            This is the exact stage list from the improved prompt, unchanged. Note stage 6 — "waits
+            forever" — that's the one required signal from the original rough prompt, now precisely
+            specified.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 12. CAPABILITY CHECKLIST                                      -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="slide-kicker">The Temporal bingo card</div>
+          <h2>What's actually demonstrated</h2>
+          <div class="grid cols-3" style="margin-top: 0.6em">
+            <div class="card tone-success"><h4>Retry policies</h4><p>per-stage, configurable backoff</p></div>
+            <div class="card tone-error"><h4>Non-retryable failures</h4><p>permanent errors stop cleanly</p></div>
+            <div class="card tone-waiting"><h4>Durable timers</h4><p>settlement hold + reminder loop</p></div>
+            <div class="card tone-accent"><h4>Child workflow</h4><p>fraud check, own history</p></div>
+            <div class="card tone-waiting"><h4>Signals</h4><p>approve / deny / info / recover</p></div>
+            <div class="card"><h4>Queries</h4><p>live state + progress %</p></div>
+            <div class="card"><h4>Update + validator</h4><p>adjuster notes, rejected inline</p></div>
+            <div class="card tone-warning"><h4>Cancellation</h4><p>saga-style compensation</p></div>
+            <div class="card"><h4>Search attributes</h4><p>find claims by status/type/score</p></div>
+            <div class="card tone-success"><h4>Worker-restart durability</h4><p>kill it mid-claim, resume</p></div>
+            <div class="card"><h4>Heartbeats</h4><p>cancellable long-running activity</p></div>
+            <div class="card tone-error"><h4>No database</h4><p>Temporal is the only state store</p></div>
+          </div>
+          <aside class="notes">
+            You don't need to read every card aloud — let it sit for a beat as a "yes, it really does
+            all of this" moment, then move into the demo where we prove a handful of these live.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SECTION DIVIDER: PART 3 (DEMO)                                 -->
+        <!-- ============================================================ -->
+        <section data-background-color="#0a0c16">
+          <div class="section-slide">
+            <div class="section-num">03</div>
+            <h1>Let's See It Run</h1>
+            <div class="section-sub">Six short cuts. Real failures. Real recovery. No cuts hiding a
+              crash.</div>
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 13. DEMO 1: SUBMIT & WATCH                                    -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="demo-slide">
+            <div class="demo-header">
+              <h2><span class="badge b-accent">DEMO 1 / 6</span>&nbsp; Submit a claim, watch it run</h2>
+            </div>
+            <div class="demo-video-frame">
+              <div class="demo-placeholder">
+                <div class="play-icon">▶</div>
+                <div>submit-and-progress.mp4</div>
+                <div class="file-hint">presentation/recordings/01-submit-and-progress.mp4</div>
+              </div>
+            </div>
+            <div class="demo-talking-points">
+              <span>Dashboard → Submit claim → live redirect</span>
+              <span>Stage timeline updates via polling, no refresh</span>
+              <span>Progress % is computed from stage weights, not hardcoded</span>
+            </div>
+          </div>
+          <aside class="notes">
+            Submit the "Happy path" preset claim. Narrate: this whole timeline is one query,
+            getClaimState, polled every 2 seconds. Point out validation → coverage → damage
+            assessment → fraud child workflow completing in a couple seconds each.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 14. DEMO 2: HUMAN-IN-THE-LOOP SIGNALS                          -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="demo-slide">
+            <div class="demo-header">
+              <h2><span class="badge b-waiting">DEMO 2 / 6</span>&nbsp; The workflow waits — forever — for you</h2>
+            </div>
+            <div class="demo-video-frame">
+              <div class="demo-placeholder">
+                <div class="play-icon">▶</div>
+                <div>human-review-signals.mp4</div>
+                <div class="file-hint">presentation/recordings/02-human-review-signals.mp4</div>
+              </div>
+            </div>
+            <div class="demo-talking-points">
+              <span>Claim parks at "Human adjuster review"</span>
+              <span>Request more info → provide info → back to review</span>
+              <span>Approve → durable settlement timer → paid</span>
+            </div>
+          </div>
+          <aside class="notes">
+            This is the required signal from the original prompt. Emphasize: the workflow is
+            genuinely suspended — no polling loop burning compute, no cron job. It resumes the instant
+            the signal arrives, even if that's a week later.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 15. DEMO 3: TRANSIENT FAILURE                                  -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="demo-slide">
+            <div class="demo-header">
+              <h2><span class="badge b-warning">DEMO 3 / 6</span>&nbsp; Break it a little — watch it heal itself</h2>
+            </div>
+            <div class="demo-video-frame">
+              <div class="demo-placeholder">
+                <div class="play-icon">▶</div>
+                <div>transient-retry.mp4</div>
+                <div class="file-hint">presentation/recordings/03-transient-retry.mp4</div>
+              </div>
+            </div>
+            <div class="demo-talking-points">
+              <span>Arm "transient failure" on damage assessment</span>
+              <span>Activity panel shows attempt 1, 2, 3 — live</span>
+              <span>Same code path, zero extra retry logic written</span>
+            </div>
+          </div>
+          <aside class="notes">
+            Point at the "Activity execution & retries" panel — that's Temporal's own attempt
+            counter and last-failure message, not something we built. The retry policy is ~6 lines of
+            config on the proxyActivities call.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 16. DEMO 4: PERMANENT FAILURE → RECOVERY SIGNAL                -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="demo-slide">
+            <div class="demo-header">
+              <h2><span class="badge b-error">DEMO 4 / 6</span>&nbsp; Break it for real — recover it from the UI</h2>
+            </div>
+            <div class="demo-video-frame">
+              <div class="demo-placeholder">
+                <div class="play-icon">▶</div>
+                <div>permanent-failure-recovery.mp4</div>
+                <div class="file-hint">presentation/recordings/04-permanent-failure-recovery.mp4</div>
+              </div>
+            </div>
+            <div class="demo-talking-points">
+              <span>"Break payment (permanent)" → non-retryable ApplicationFailure</span>
+              <span>Claim parks in "blocked on failure" — not crashed, not lost</span>
+              <span>Operator clicks Retry → clears fault → claim completes</span>
+            </div>
+          </div>
+          <aside class="notes">
+            This is the failure-handling story: a permanent failure doesn't kill the workflow, it
+            parks it waiting for a human decision (retry or abandon) — same signal mechanism as the
+            business logic, reused for operations.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 17. DEMO 5: WORKER RESTART (THE WOW MOMENT)                    -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="demo-slide">
+            <div class="demo-header">
+              <h2><span class="badge b-success">DEMO 5 / 6</span>&nbsp; Kill the worker. Mid-claim. On purpose.</h2>
+            </div>
+            <div class="demo-video-frame">
+              <div class="demo-placeholder">
+                <div class="play-icon">▶</div>
+                <div>worker-restart-durability.mp4</div>
+                <div class="file-hint">presentation/recordings/05-worker-restart-durability.mp4</div>
+              </div>
+            </div>
+            <div class="demo-talking-points">
+              <span>"Kill &amp; restart worker" while a claim is blocked</span>
+              <span>worker-…-gen1 dies, worker-…-gen2 comes up</span>
+              <span>Claim resumes exactly where it was — timers included</span>
+            </div>
+          </div>
+          <aside class="notes">
+            THE moment of the talk. Nothing in the UI or API restarted — only the worker process. The
+            claim's entire state, history and pending timer survived because none of it ever lived in
+            the worker's memory — it's all Temporal's event history. Let this one breathe; don't rush
+            the narration.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 18. DEMO 6: CANCELLATION / SAGA                                -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="demo-slide">
+            <div class="demo-header">
+              <h2><span class="badge b-muted">DEMO 6 / 6</span>&nbsp; Cancel mid-flight — compensations run</h2>
+            </div>
+            <div class="demo-video-frame">
+              <div class="demo-placeholder">
+                <div class="play-icon">▶</div>
+                <div>cancellation-saga.mp4</div>
+                <div class="file-hint">presentation/recordings/06-cancellation-saga.mp4</div>
+              </div>
+            </div>
+            <div class="demo-talking-points">
+              <span>Cancel a running claim from the dashboard</span>
+              <span>Reserve released, payment reversed, claimant notified</span>
+              <span>Workflow closes CANCELED — cleanly, not abruptly</span>
+            </div>
+          </div>
+          <aside class="notes">
+            If time is short, this is the cut candidate — mention it exists and move to Temporal Web
+            UI / lessons. If time allows, show the non-cancellable compensation scope running even
+            though cancellation was requested.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 19. TEMPORAL WEB UI TOUR                                       -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="demo-slide">
+            <div class="demo-header">
+              <h2><span class="badge b-accent">BONUS</span>&nbsp; The same story, from Temporal's Web UI</h2>
+            </div>
+            <div class="demo-video-frame">
+              <div class="demo-placeholder">
+                <div class="play-icon">▶</div>
+                <div>temporal-web-ui-tour.mp4</div>
+                <div class="file-hint">presentation/recordings/07-temporal-web-ui-tour.mp4</div>
+              </div>
+            </div>
+            <div class="demo-talking-points">
+              <span>Event history: every retry, timer, signal, child workflow</span>
+              <span>Search: ClaimStatus = "awaiting-review" AND FraudScore &gt;= 75</span>
+              <span>Run getClaimState as a raw query, no UI involved</span>
+            </div>
+          </div>
+          <aside class="notes">
+            Good moment to remind the room: everything the dashboard showed is also just... visible,
+            for free, in Temporal's own UI. The custom UI is a convenience layer, not a requirement.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SECTION DIVIDER: PART 4                                       -->
+        <!-- ============================================================ -->
+        <section data-background-color="#0a0c16">
+          <div class="section-slide">
+            <div class="section-num">04</div>
+            <h1>Matching Your Use Case</h1>
+            <div class="section-sub">Turning what we just saw into a checklist you can use on Monday.</div>
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 20. SIGNALS YOU HAVE A GOOD USE CASE                           -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="slide-kicker">Pattern match</div>
+          <h2>Signals you have a good Temporal use case</h2>
+          <ul class="checklist" style="margin-top: 0.7em">
+            <li><span class="check">✓</span>&nbsp;<span class="label">A process that spans minutes, days, or months — not one request/response</span></li>
+            <li><span class="check">✓</span>&nbsp;<span class="label">A human has to approve, deny, or provide info <em>at some unknown point</em></span></li>
+            <li><span class="check">✓</span>&nbsp;<span class="label">Steps call flaky external systems that need retries with backoff</span></li>
+            <li><span class="check">✓</span>&nbsp;<span class="label">A crash mid-process must not lose or double-run anything</span></li>
+            <li><span class="check">✓</span>&nbsp;<span class="label">You need an audit trail of exactly what happened, in order</span></li>
+            <li><span class="check">✓</span>&nbsp;<span class="label">Multiple steps must be undone together if a later one fails (saga)</span></li>
+          </ul>
+          <aside class="notes">
+            Ask the room: "how many of your services already do at least three of these with cron
+            jobs, status columns, and dead-letter queues?" That's usually most of the hands.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 21. THE GENERALIZED PROMPT LESSON                              -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="slide-kicker">The reusable trick</div>
+          <h2>Before you prompt: name the durability questions</h2>
+          <div class="grid cols-2" style="margin-top: 0.6em">
+            <div class="card">
+              <h4>Ask about failure</h4>
+              <p>What activities can fail transiently? What's permanent? What must be
+                <mark>non-retryable</mark>?</p>
+            </div>
+            <div class="card">
+              <h4>Ask about waiting</h4>
+              <p>What waits on a human? For how long? What happens if nobody answers?</p>
+            </div>
+            <div class="card">
+              <h4>Ask about state</h4>
+              <p>What must survive a crash? Who is the source of truth — your DB, or the workflow
+                history?</p>
+            </div>
+            <div class="card">
+              <h4>Ask about boundaries</h4>
+              <p>Where does UI end and API begin? Where does API end and worker begin?</p>
+            </div>
+          </div>
+          <p class="muted small" style="margin-top: 0.7em">
+            Answer these four categories in your prompt (or your design doc) and both AI agents and
+            human engineers will build the right thing on the first pass.
+          </p>
+          <aside class="notes">
+            This slide is the payoff of the whole talk — it's the generalized version of "the
+            improved prompt" from part 1, usable on literally any use case, not just claims.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 22. TRY THIS YOURSELF                                          -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="slide-kicker">Homework</div>
+          <h2>Try this yourself, this week</h2>
+          <div class="window" style="margin-top: 0.5em">
+            <div class="window-bar">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+              <span class="label">prompt-template.txt</span>
+            </div>
+            <div class="window-body">
+              <span class="prompt-marker">&gt;</span> Here's my rough idea: [describe your process in
+              2-3 sentences]. Turn this into a spec for a coding agent building it on Temporal.
+              Explicitly call out: which steps need retries and what kind of failures they should
+              tolerate, where a human needs to approve/reject/provide input and how long we should
+              wait, what a crash mid-process must not lose, and how the UI/API/worker boundaries
+              should be drawn. Then build it.
+            </div>
+          </div>
+          <aside class="notes">
+            Literally invite people to paste their own use case into this template tonight. Mention
+            the repo is public (link on the next slide) so they can see the exact result of this
+            process end-to-end.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 23. RECAP                                                      -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="statement-slide">
+            <div class="slide-kicker">Recap</div>
+            <div class="statement">
+              The veil isn't Temporal.
+              <br />It's <span class="accent-text">under-specified requirements.</span>
+            </div>
+            <div class="attribution">Name the failures, the waits, and the source of truth — Temporal
+              does the rest.</div>
+          </div>
+          <aside class="notes">
+            One breath, then move to resources and thank the room.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 24. RESOURCES                                                  -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="slide-kicker">Go build something</div>
+          <h2>Resources</h2>
+          <div class="grid cols-2" style="margin-top: 0.7em">
+            <div class="card">
+              <h4>This demo</h4>
+              <p>Full source, README, tests — <code>github.com/&lt;you&gt;/temporal-claims-demo</code></p>
+            </div>
+            <div class="card">
+              <h4>Temporal docs</h4>
+              <p><code>docs.temporal.io</code> · TypeScript SDK samples</p>
+            </div>
+            <div class="card">
+              <h4>Community</h4>
+              <p>Temporal Slack · community forum · local meetups</p>
+            </div>
+            <div class="card">
+              <h4>The prompt template</h4>
+              <p>Previous slide — steal it, adapt it, use it on your own use case</p>
+            </div>
+          </div>
+          <aside class="notes">
+            Fill in your actual repo URL before the talk. Consider a QR code here if presenting in
+            person.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 25. THANK YOU / Q&A                                            -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="title-slide">
+            <div class="brand-row"><span class="brand-mark">◈</span> Temporal · Engineering Talk</div>
+            <h1>Thank you.</h1>
+            <div class="subtitle">Questions, war stories, and "would this work for my use case"
+              conversations welcome.</div>
+          </div>
+          <aside class="notes">
+            Open the floor. Common questions to be ready for: versioning running workflows, Temporal
+            Cloud vs. self-hosted, payload size limits, how this compares to Airflow/Step
+            Functions/Camunda.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- APPENDIX / BACKUP SLIDES                                       -->
+        <!-- ============================================================ -->
+        <section data-background-color="#0a0c16">
+          <div class="section-slide">
+            <div class="section-num">＋</div>
+            <h1>Backup Slides</h1>
+            <div class="section-sub">Full prompt text and a code map, for anyone who wants the
+              receipts.</div>
+          </div>
+        </section>
+
+        <section>
+          <div class="slide-kicker">Appendix A</div>
+          <h2>The improved prompt, in full</h2>
+          <div class="window" style="margin-top: 0.4em">
+            <div class="window-bar">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+              <span class="label">chat — refined spec (excerpt 1/2)</span>
+            </div>
+            <div class="window-body" style="font-size: 0.38em">
+              I want to explore Temporal's capabilities by building a complete demonstration
+              application for an insurance claim process. Create a working monorepo using: Temporal
+              TypeScript SDK, a local Temporal development server, NestJS for the backend/API and
+              Temporal worker, React with TypeScript for the UI, Docker Compose where useful. Do not
+              use a database. Temporal must be the source of truth for workflow state and progress.
+              Browser localStorage may be used to preserve UI preferences and recently viewed workflow
+              IDs across refreshes, but it must not be treated as the authoritative workflow state.
+            </div>
+          </div>
+          <aside class="notes">Read at your own pace if someone asks to see the whole thing.</aside>
+        </section>
+
+        <section>
+          <div class="slide-kicker">Appendix A (continued)</div>
+          <h2>The improved prompt — capability list</h2>
+          <div class="window" style="margin-top: 0.4em">
+            <div class="window-bar">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+              <span class="label">chat — refined spec (excerpt 2/2)</span>
+            </div>
+            <div class="window-body" style="font-size: 0.36em">
+              Activities with configurable retry policies · at least one timer or durable sleep · at
+              least one child workflow · at least one UI-driven signal where the workflow pauses for
+              human input · workflow queries that expose current state and progress · cancellation
+              handling · activity and workflow failure handling · a way to retry or recover from a
+              simulated failure · meaningful workflow IDs and search attributes · workflow history
+              remaining valid across worker restarts. The human-review step should wait indefinitely
+              for an adjuster to approve, deny, or request more information.
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="slide-kicker">Appendix B</div>
+          <h2>Code map — where each capability lives</h2>
+          <div class="grid cols-2" style="margin-top: 0.5em">
+            <div class="card">
+              <h4>Workflow logic</h4>
+              <p><code>packages/worker/src/workflows/claim.workflow.ts</code></p>
+              <p><code>packages/worker/src/workflows/fraud-check.workflow.ts</code></p>
+            </div>
+            <div class="card">
+              <h4>Activities &amp; simulated failures</h4>
+              <p><code>packages/worker/src/activities/*.ts</code></p>
+            </div>
+            <div class="card">
+              <h4>REST facade over Temporal</h4>
+              <p><code>packages/api/src/claims/claims.service.ts</code></p>
+            </div>
+            <div class="card">
+              <h4>Dashboard</h4>
+              <p><code>packages/web/src/pages/ClaimDetailPage.tsx</code></p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="../node_modules/reveal.js/dist/reveal.js"></script>
+    <script src="../node_modules/reveal.js/plugin/notes/notes.js"></script>
+    <script>
+      Reveal.initialize({
+        hash: true,
+        controls: true,
+        progress: true,
+        center: false,
+        transition: 'slide',
+        transitionSpeed: 'fast',
+        width: 1280,
+        height: 720,
+        margin: 0.1,
+        plugins: [RevealNotes],
+      });
+    </script>
+  </body>
+</html>
