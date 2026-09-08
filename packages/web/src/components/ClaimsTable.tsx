@@ -71,6 +71,11 @@ export function ClaimsTable({
                     <Link className="link" to={`/claims/${encodeURIComponent(claim.workflowId)}`}>
                       {claim.claimId}
                     </Link>
+                    {WAITING_STATUSES.includes(claim.claimStatus ?? '') && (
+                      <span className="pill waiting-pill" title="This claim is blocked on a human">
+                        needs you
+                      </span>
+                    )}
                   </td>
                   <td>{claim.policyholder ?? '—'}</td>
                   <td>{claim.claimType ? titleCase(claim.claimType) : '—'}</td>

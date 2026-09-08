@@ -149,7 +149,10 @@ in a named volume, so claims survive `docker compose restart` — again, no appl
 1. **Submit a claim.** On the dashboard, keep the _Happy path_ preset and click **Submit claim**.
    You land on the claim page and watch stages complete in real time (polling every 2s).
 2. **Watch it park.** The claim stops at **Human adjuster review**: the workflow is blocked on
-   `condition(...)` and the UI shows _⏸ Waiting for your decision_ with the reminder-timer count.
+   `condition(...)`. A **"This claim is waiting for you"** banner appears under the progress bar
+   with a **Go to controls ↓** button, and the claims list marks that row with a **needs you** pill.
+   The controls themselves are in the right-hand **"⏸ Waiting for your decision"** card, which shows
+   the reminder-timer count (on narrow windows the columns stack, so it sits below the timeline).
 3. **Ask for more information.** Click **Request more info** → the claim moves to
    _Waiting for more information_. Fill in the answer and click **Provide information** → it returns
    to review. Both directions are Temporal signals.

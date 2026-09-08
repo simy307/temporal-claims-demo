@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { isWaitingOnHuman, type ClaimDetailResponse } from '@claims/shared';
 import { ActionPanel } from '../components/ActionPanel';
@@ -24,6 +24,11 @@ export function ClaimDetailPage() {
   const { push } = useToasts();
   const [temporalUiUrl, setTemporalUiUrl] = useState('http://localhost:8233');
   const [busy, setBusy] = useState(false);
+  const actionsRef = useRef<HTMLDivElement>(null);
+
+  const scrollToActions = () => {
+    actionsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
 
   const detail = usePolling<ClaimDetailResponse>(
     useCallback(() => api.getClaim(workflowId), [workflowId]),
@@ -133,6 +138,26 @@ export function ClaimDetailPage() {
           tone={state && isWaitingOnHuman(state.phase) ? 'waiting' : 'active'}
         />
 
+        {/* The action panel lives in the side column, which stacks below the timeline on narrow
+            screens. Surface an unmissable prompt (and a jump link) whenever a human is blocking. */}
+        {state && isWaitingOnHuman(state.phase) && (
+          <div className={`banner ${state.phase === 'blocked-on-failure' ? 'error' : 'waiting'}`}>
+            <span>
+              <strong>This claim is waiting for you.</strong>{' '}
+              {state.awaiting.kind === 'human-review'
+                ? 'Approve, deny, or request more information to release the workflow.'
+                : state.awaiting.kind === 'more-information'
+                  ? `Information requested by ${state.awaiting.requestedBy}: “${state.awaiting.question}”`
+                  : state.awaiting.kind === 'failure-recovery'
+                    ? `Stage "${state.awaiting.stage}" failed — retry it or abandon the claim.`
+                    : ''}
+            </span>
+            <button type="button" className="button primary small" onClick={scrollToActions}>
+              Go to controls ↓
+            </button>
+          </div>
+        )}
+
         <div className="claim-meta">
           <span>Policyholder: {state?.input.policyholder ?? '—'}</span>
           <span>Policy: {state?.input.policyNumber ?? '—'}</span>
@@ -234,12 +259,14 @@ export function ClaimDetailPage() {
           </div>
 
           <div className="column side">
-            <ActionPanel
-              workflowId={workflowId}
-              state={state}
-              adjuster={preferences.adjusterName}
-              onChanged={() => detail.refresh()}
-            />
+            <div ref={actionsRef}>
+              <ActionPanel
+                workflowId={workflowId}
+                state={state}
+                adjuster={preferences.adjusterName}
+                onChanged={() => detail.refresh()}
+              />
+            </div>
             <PendingActivitiesPanel activities={data!.pendingActivities} />
             <FactsPanel detail={data!} />
             <SimulationPanel

@@ -303,6 +303,11 @@ pre {
   background: #f8717112;
 }
 
+.banner.waiting {
+  border-color: #38bdf866;
+  background: #38bdf814;
+}
+
 .link {
   color: var(--accent);
   text-decoration: none;
@@ -319,6 +324,13 @@ pre {
   font-size: 11px;
   background: var(--accent-soft);
   color: #b9a6ff;
+}
+
+.waiting-pill {
+  margin-left: 8px;
+  background: #38bdf81f;
+  color: var(--waiting);
+  white-space: nowrap;
 }
 
 /* ---------------------------------------------------------------- badges */
