@@ -9,8 +9,9 @@ const outPath = join(__dirname, '..', 'Lifting-the-Veil-Temporal-Talk.pdf');
 const browser = await chromium.launch();
 const page = await browser.newPage();
 await page.goto('http://localhost:8080/slides/index.html?print-pdf', { waitUntil: 'networkidle' });
-// Give reveal.js's print-pdf plugin time to lay out every slide as its own page.
-await page.waitForTimeout(1500);
+// Give reveal.js's print-pdf plugin time to lay out every slide as its own page, and our video
+// poster-swap script time to run afterward.
+await page.waitForTimeout(2000);
 await page.pdf({
   path: outPath,
   width: '1280px',
