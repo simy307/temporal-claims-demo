@@ -410,21 +410,21 @@
         <!-- ============================================================ -->
         <section>
           <div class="slide-kicker">Code → observability, for free</div>
-          <h2>Four activity calls. One real execution timeline.</h2>
+          <h2>Three activity calls. One real execution timeline.</h2>
           <div class="two-col" style="margin-top: 0.6em">
             <div class="window">
               <div class="window-bar">
                 <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-                <span class="label">claim.workflow.ts — simplified</span>
+                <span class="label">fraud-check.workflow.ts — simplified</span>
               </div>
-              <div class="window-body"><pre><span class="prompt-marker">export async function</span> claimWorkflow(input: ClaimInput) {
-  <span class="prompt-marker">const</span> validation = <span class="prompt-marker">await</span> validateClaim(input);
-  <span class="prompt-marker">const</span> coverage   = <span class="prompt-marker">await</span> verifyCoverage(input);
-  <span class="prompt-marker">const</span> damage     = <span class="prompt-marker">await</span> assessDamage(input);
-  <span class="prompt-marker">const</span> payment    = <span class="prompt-marker">await</span> processPayment(input);
+              <div class="window-body"><pre><span class="prompt-marker">const</span> { checkClaimHistory, checkWatchlists, scoreFraudRisk } =
+  proxyActivities&lt;<span class="prompt-marker">typeof</span> activities&gt;({ ...retryPolicy });
 
-  <span class="prompt-marker">return</span> { validation, coverage, damage, payment };
-}</pre></div>
+<span class="prompt-marker">const</span> [history, watchlist] = <span class="prompt-marker">await</span> Promise.all([
+  checkClaimHistory(input),
+  checkWatchlists(input),
+]);
+<span class="prompt-marker">const</span> assessment = <span class="prompt-marker">await</span> scoreFraudRisk(input.claimId, [...history, ...watchlist]);</pre></div>
             </div>
             <div class="window">
               <div class="window-bar">
@@ -432,7 +432,7 @@
                 <span class="label">Temporal Web UI — Timeline tab</span>
               </div>
               <div class="window-body-image">
-                <img src="../assets/screenshots/temporal-timeline-example.png" alt="Temporal Web UI Timeline tab showing each activity as a bar on a Gantt-style chart" />
+                <img src="../assets/screenshots/temporal-timeline-fraud-example.png" alt="Temporal Web UI Timeline tab showing checkWatchlists and checkClaimHistory running in parallel, followed by scoreFraudRisk" />
               </div>
             </div>
           </div>
@@ -441,10 +441,10 @@
             left shows up as a bar on the right the moment it runs.
           </p>
           <aside class="notes">
-            This is the real Timeline tab from this app's Temporal Web UI, not a mockup. The code on
-            the left is intentionally stripped down to four sequential activity calls — the real
-            claim.workflow.ts adds retries, a child workflow, timers and signals, and all of that
-            shows up on this same timeline with zero extra instrumentation code.
+            This is the real Timeline tab for this app's fraud-check child workflow, not a mockup.
+            The code on the left is the entire body — just a proxyActivities call and three activity
+            invocations, two of them running in parallel. That parallelism is exactly what you see as
+            two overlapping bars on the right, with zero extra instrumentation code.
           </aside>
         </section>
 

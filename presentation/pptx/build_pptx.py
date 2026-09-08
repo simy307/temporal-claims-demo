@@ -676,23 +676,23 @@ folder_tree_slide("Architecture", "Inside the three packages", [
 
 code_and_image_slide(
     "Code \u2192 observability, for free",
-    "Four activity calls. One real execution timeline.",
-    "claim.workflow.ts \u2014 simplified",
-    "export async function claimWorkflow(input: ClaimInput) {\n"
-    "  const validation = await validateClaim(input);\n"
-    "  const coverage   = await verifyCoverage(input);\n"
-    "  const damage     = await assessDamage(input);\n"
-    "  const payment    = await processPayment(input);\n\n"
-    "  return { validation, coverage, damage, payment };\n"
-    "}",
+    "Three activity calls. One real execution timeline.",
+    "fraud-check.workflow.ts \u2014 simplified",
+    "const { checkClaimHistory, checkWatchlists, scoreFraudRisk } =\n"
+    "  proxyActivities<typeof activities>({ ...retryPolicy });\n\n"
+    "const [history, watchlist] = await Promise.all([\n"
+    "  checkClaimHistory(input),\n"
+    "  checkWatchlists(input),\n"
+    "]);\n"
+    "const assessment = await scoreFraudRisk(input.claimId, [...history, ...watchlist]);",
     "Temporal Web UI \u2014 Timeline tab",
-    os.path.join(ASSETS_DIR, "screenshots", "temporal-timeline-example.png"),
+    os.path.join(ASSETS_DIR, "screenshots", "temporal-timeline-fraud-example.png"),
     note_text="No custom logging, no tracing setup, no dashboard to build \u2014 every activity call "
               "on the left shows up as a bar on the right the moment it runs.",
-    notes="This is the real Timeline tab from this app's Temporal Web UI, not a mockup. The code is "
-          "intentionally stripped down to four sequential activity calls \u2014 the real "
-          "claim.workflow.ts adds retries, a child workflow, timers and signals, and all of that "
-          "shows up on this same timeline with zero extra instrumentation code.",
+    notes="This is the real Timeline tab for this app's fraud-check child workflow, not a mockup. "
+          "The code on the left is the entire body \u2014 just a proxyActivities call and three "
+          "activity invocations, two of them running in parallel. That parallelism is exactly what "
+          "you see as two overlapping bars on the right, with zero extra instrumentation code.",
     font_size=13,
 )
 
