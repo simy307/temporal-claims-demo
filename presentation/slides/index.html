@@ -420,11 +420,13 @@
               <div class="window-body"><pre><span class="prompt-marker">const</span> { checkClaimHistory, checkWatchlists, scoreFraudRisk } =
   proxyActivities&lt;<span class="prompt-marker">typeof</span> activities&gt;({ ...retryPolicy });
 
-<span class="prompt-marker">const</span> [history, watchlist] = <span class="prompt-marker">await</span> Promise.all([
-  checkClaimHistory(input),
-  checkWatchlists(input),
-]);
-<span class="prompt-marker">const</span> assessment = <span class="prompt-marker">await</span> scoreFraudRisk(input.claimId, [...history, ...watchlist]);</pre></div>
+<span class="prompt-marker">export async function</span> fraudCheckWorkflow(input: ClaimInput) {
+  <span class="prompt-marker">const</span> [history, watchlist] = <span class="prompt-marker">await</span> Promise.all([
+    checkClaimHistory(input),
+    checkWatchlists(input),
+  ]);
+  <span class="prompt-marker">return await</span> scoreFraudRisk(input.claimId, [...history, ...watchlist]);
+}</pre></div>
             </div>
             <div class="window">
               <div class="window-bar">

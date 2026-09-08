@@ -680,11 +680,13 @@ code_and_image_slide(
     "fraud-check.workflow.ts \u2014 simplified",
     "const { checkClaimHistory, checkWatchlists, scoreFraudRisk } =\n"
     "  proxyActivities<typeof activities>({ ...retryPolicy });\n\n"
-    "const [history, watchlist] = await Promise.all([\n"
-    "  checkClaimHistory(input),\n"
-    "  checkWatchlists(input),\n"
-    "]);\n"
-    "const assessment = await scoreFraudRisk(input.claimId, [...history, ...watchlist]);",
+    "export async function fraudCheckWorkflow(input: ClaimInput) {\n"
+    "  const [history, watchlist] = await Promise.all([\n"
+    "    checkClaimHistory(input),\n"
+    "    checkWatchlists(input),\n"
+    "  ]);\n"
+    "  return await scoreFraudRisk(input.claimId, [...history, ...watchlist]);\n"
+    "}",
     "Temporal Web UI \u2014 Timeline tab",
     os.path.join(ASSETS_DIR, "screenshots", "temporal-timeline-fraud-example.png"),
     note_text="No custom logging, no tracing setup, no dashboard to build \u2014 every activity call "
