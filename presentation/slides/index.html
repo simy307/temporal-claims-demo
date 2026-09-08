@@ -23,7 +23,6 @@
             <div class="subtitle">How to match your use case &amp; Temporal — told through one prompt,
               one AI coding agent, and one insurance claim.</div>
             <div class="meta">
-              <div><strong>~25 min</strong>talk length</div>
               <div><strong>1</strong>prompt → full app</div>
               <div><strong>0</strong>databases used</div>
             </div>
@@ -70,7 +69,7 @@
           <div class="grid cols-3" style="margin-top: 1em">
             <div class="card tone-accent">
               <h4>Step 1</h4>
-              <p>Write the rough idea, badly, on purpose</p>
+              <p>Write the rough idea</p>
             </div>
             <div class="card tone-accent">
               <h4>Step 2</h4>
@@ -96,7 +95,7 @@
           <ul class="checklist" style="margin-top: 0.8em">
             <li><span class="check">01</span>&nbsp;<span class="label">The prompt experiment — before &amp; after</span></li>
             <li><span class="check">02</span>&nbsp;<span class="label">What actually got built (architecture + lifecycle)</span></li>
-            <li><span class="check">03</span>&nbsp;<span class="label">Live demo — 6 short cuts, real failures, real recovery</span></li>
+            <li><span class="check">03</span>&nbsp;<span class="label">Live demo — real failures, real recovery</span></li>
             <li><span class="check">04</span>&nbsp;<span class="label">Lessons — how to match your use case to Temporal</span></li>
             <li><span class="check">05</span>&nbsp;<span class="label">Resources &amp; how to try this yourself</span></li>
           </ul>
@@ -163,8 +162,7 @@
             </ul>
           </div>
           <p class="muted small" style="margin-top: 0.7em">
-            None of this makes the prompt bad — it's a perfectly normal first draft. It just means the
-            agent (or a human architect) has to invent Temporal-specific decisions with no guidance.
+            None of this makes the prompt bad — it's a perfectly normal first draft.
           </p>
           <aside class="notes">
             The point isn't "this prompt is bad," it's "this prompt under-specifies exactly the
@@ -183,18 +181,19 @@
               <h4>Why not write the spec by hand?</h4>
               <p>Because "what should a good Temporal spec contain" is itself a question worth
                 delegating — the model already knows the shape of retries, signals, queries,
-                sagas.</p>
+                sagas, especially with a Temporal skill loaded for grounding.</p>
             </div>
             <div class="card tone-accent">
               <h4>What I asked for</h4>
-              <p>"Would this be good for a coding-agent prompt?" — then iterated until the answer
-                covered architecture, failure modes, and UI/UX explicitly.</p>
+              <p>"Would this be good for a coding-agent prompt?" — the answer covered
+                architecture, failure modes, and UI/UX explicitly.</p>
             </div>
           </div>
           <aside class="notes">
-            This is the generalizable trick: use the model to interrogate its own upcoming task. It's
-            cheap, fast, and it front-loads the Temporal-specific vocabulary (retry policy, signal,
-            saga, search attribute) that a vague prompt never would have surfaced.
+            This is the generalizable trick: use the model to interrogate its own upcoming task —
+            a loaded Temporal skill makes this sharper still. It's cheap, fast, and it front-loads
+            the Temporal-specific vocabulary (retry policy, signal, saga, search attribute) that a
+            vague prompt never would have surfaced.
           </aside>
         </section>
 
@@ -378,9 +377,13 @@
 │   ├── claim.workflow.ts
 │   └── fraud-check.workflow.ts
 ├── <span class="ft-dir">activities/</span>
-│   ├── claim.activities.ts
-│   ├── fraud.activities.ts
-│   ├── payment.activities.ts
+│   ├── <span class="ft-dir">claim/</span>
+│   │   ├── validate-claim.ts
+│   │   ├── process-payment.ts
+│   │   └── …8 more
+│   ├── <span class="ft-dir">fraud/</span>
+│   │   ├── check-watchlists.ts
+│   │   └── score-fraud-risk.ts
 │   └── simulation.ts
 ├── <span class="ft-dir">temporal/</span>
 │   └── temporal-worker.service.ts
@@ -396,7 +399,52 @@
             This is the folder-level version of the architecture diagram two slides back. The point
             isn't the file names — it's that each package has exactly one job: web renders and
             polls, api translates HTTP to Temporal client calls, worker is the only place workflow
-            and activity code lives. Nothing about a claim's state is duplicated between them.
+            and activity code lives. Nothing about a claim's state is duplicated between them. Note
+            activities are one function per file, grouped by domain (claim/, fraud/) — easy to find,
+            easy to unit test in isolation.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 11b. CODE vs. TEMPORAL UI TIMELINE (SPLIT PANEL)               -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="slide-kicker">Code → observability, for free</div>
+          <h2>Four activity calls. One real execution timeline.</h2>
+          <div class="two-col" style="margin-top: 0.6em">
+            <div class="window">
+              <div class="window-bar">
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span class="label">claim.workflow.ts — simplified</span>
+              </div>
+              <div class="window-body"><pre><span class="prompt-marker">export async function</span> claimWorkflow(input: ClaimInput) {
+  <span class="prompt-marker">const</span> validation = <span class="prompt-marker">await</span> validateClaim(input);
+  <span class="prompt-marker">const</span> coverage   = <span class="prompt-marker">await</span> verifyCoverage(input);
+  <span class="prompt-marker">const</span> damage     = <span class="prompt-marker">await</span> assessDamage(input);
+  <span class="prompt-marker">const</span> payment    = <span class="prompt-marker">await</span> processPayment(input);
+
+  <span class="prompt-marker">return</span> { validation, coverage, damage, payment };
+}</pre></div>
+            </div>
+            <div class="window">
+              <div class="window-bar">
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span class="label">Temporal Web UI — Timeline tab</span>
+              </div>
+              <div class="window-body-image">
+                <img src="../assets/screenshots/temporal-timeline-example.png" alt="Temporal Web UI Timeline tab showing each activity as a bar on a Gantt-style chart" />
+              </div>
+            </div>
+          </div>
+          <p class="muted small" style="margin-top: 0.6em">
+            No custom logging, no tracing setup, no dashboard to build — every activity call on the
+            left shows up as a bar on the right the moment it runs.
+          </p>
+          <aside class="notes">
+            This is the real Timeline tab from this app's Temporal Web UI, not a mockup. The code on
+            the left is intentionally stripped down to four sequential activity calls — the real
+            claim.workflow.ts adds retries, a child workflow, timers and signals, and all of that
+            shows up on this same timeline with zero extra instrumentation code.
           </aside>
         </section>
 
@@ -433,8 +481,7 @@
           <div class="section-slide">
             <div class="section-num">03</div>
             <h1>Let's See It Run</h1>
-            <div class="section-sub">Six short cuts. Real failures. Real recovery. No cuts hiding a
-              crash.</div>
+            <div class="section-sub">Real failures. Real recovery. No cuts hiding a crash.</div>
           </div>
         </section>
 
@@ -613,7 +660,7 @@
           <div class="section-slide">
             <div class="section-num">04</div>
             <h1>Matching Your Use Case</h1>
-            <div class="section-sub">Turning what we just saw into a checklist you can use on Monday.</div>
+            <div class="section-sub">Turning what we just saw into a checklist you can use.</div>
           </div>
         </section>
 
@@ -829,7 +876,7 @@
             </div>
             <div class="card">
               <h4>Activities &amp; simulated failures</h4>
-              <p><code>packages/worker/src/activities/*.ts</code></p>
+              <p><code>packages/worker/src/activities/{claim,fraud}/*.ts</code></p>
             </div>
             <div class="card">
               <h4>REST facade over Temporal</h4>

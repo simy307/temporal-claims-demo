@@ -10,6 +10,8 @@ Run: /path/to/venv/bin/python presentation/pptx/build_pptx.py
 """
 from __future__ import annotations
 
+import os
+
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
@@ -17,6 +19,8 @@ from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.oxml.ns import qn
 import copy
+
+ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "assets")
 
 # ---------------------------------------------------------------------------
 # Palette (matches presentation/slides/theme.css and the claims-console app)
@@ -297,6 +301,55 @@ def folder_tree_slide(kicker, title, columns, note_text=None, notes=""):
     return s
 
 
+def code_and_image_slide(
+    kicker, title, left_label, code_text, right_label, image_path, note_text=None, notes="", font_size=13,
+):
+    """Two side-by-side "windows": a code block on the left, a screenshot on the right."""
+    s = content_slide(kicker, title, notes)
+    gap = Inches(0.3)
+    total_w = Inches(11.9)
+    col_w = Emu(int((total_w - gap) / 2))
+    top = Inches(1.9)
+    height = Inches(3.9)
+    left_x = Inches(0.7)
+    right_x = Emu(int(left_x + col_w + gap))
+
+    # Left: code window.
+    rounded_card(s, left_x, top, col_w, height, fill=CODE_BG)
+    bar = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left_x, top, col_w, Inches(0.4))
+    bar.fill.solid(); bar.fill.fore_color.rgb = RGBColor(0x15, 0x19, 0x34)
+    bar.line.color.rgb = CARD_BORDER; bar.line.width = Pt(1)
+    bar.shadow.inherit = False
+    _, btf = add_textbox(s, left_x + Inches(0.15), top + Inches(0.06), col_w - Inches(0.3), Inches(0.3))
+    bp = btf.paragraphs[0]
+    br = bp.add_run()
+    br.text = f"●  ●  ●    {left_label}"
+    style_run(br, size=10, color=MUTED, font=FONT_CODE)
+    _, tf = add_textbox(s, left_x + Inches(0.2), top + Inches(0.55), col_w - Inches(0.4), height - Inches(0.75))
+    p = tf.paragraphs[0]
+    r = p.add_run()
+    r.text = code_text
+    style_run(r, size=font_size, color=RGBColor(0xD6, 0xDC, 0xF5), font=FONT_CODE)
+    p.line_spacing = 1.3
+
+    # Right: screenshot window.
+    rounded_card(s, right_x, top, col_w, height, fill=CODE_BG)
+    bar2 = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, right_x, top, col_w, Inches(0.4))
+    bar2.fill.solid(); bar2.fill.fore_color.rgb = RGBColor(0x15, 0x19, 0x34)
+    bar2.line.color.rgb = CARD_BORDER; bar2.line.width = Pt(1)
+    bar2.shadow.inherit = False
+    _, btf2 = add_textbox(s, right_x + Inches(0.15), top + Inches(0.06), col_w - Inches(0.3), Inches(0.3))
+    bp2 = btf2.paragraphs[0]
+    br2 = bp2.add_run()
+    br2.text = f"●  ●  ●    {right_label}"
+    style_run(br2, size=10, color=MUTED, font=FONT_CODE)
+    s.shapes.add_picture(image_path, right_x + Inches(0.1), top + Inches(0.5), width=col_w - Inches(0.2))
+
+    if note_text:
+        add_body(s, note_text, Emu(int(top + height + Inches(0.25))), size=14)
+    return s
+
+
 def code_window_slide(kicker, title, label, code_text, notes="", font_size=13):
     s = content_slide(kicker, title, notes)
     left, top, width, height = Inches(0.7), Inches(2.0), Inches(11.9), Inches(2.6)
@@ -393,7 +446,7 @@ title_slide(
     "Lifting the Veil",
     "How to match your use case & Temporal — told through one prompt, one AI coding "
     "agent, and one insurance claim.",
-    [("talk length", "~25 min"), ("prompt → full app", "1"), ("databases used", "0")],
+    [("prompt → full app", "1"), ("databases used", "0")],
     notes=(
         "Welcome / intro yourself. Hook: 'How many of you have looked at Temporal's docs and "
         "thought this looks powerful, but I genuinely don't know if MY problem needs it?' That's "
@@ -409,7 +462,7 @@ statement_slide(
 )
 
 cards_slide("The experiment", "I asked AI a vague prompt. Here's what happened.", [
-    ("Step 1", "Write the rough idea, badly, on purpose", ACCENT),
+    ("Step 1", "Write the rough idea", ACCENT),
     ("Step 2", "Ask AI to turn it into a real spec", ACCENT),
     ("Step 3", "Hand that spec to a coding agent & build it", ACCENT),
 ], cols=3, start_y=2.9, card_h=1.3,
@@ -421,7 +474,7 @@ cards_slide("The experiment", "I asked AI a vague prompt. Here's what happened."
 bullets_slide("Agenda", "Where we're headed", [
     ("01", "The prompt experiment \u2014 before & after"),
     ("02", "What actually got built (architecture + lifecycle)"),
-    ("03", "Live demo \u2014 6 short cuts, real failures, real recovery"),
+    ("03", "Live demo \u2014 real failures, real recovery"),
     ("04", "Lessons \u2014 how to match your use case to Temporal"),
     ("05", "Resources & how to try this yourself"),
 ], bullet_color=SUCCESS, notes="Quick roadmap. Keep brief.")
@@ -465,9 +518,10 @@ add_body(s, "None of this makes the prompt bad \u2014 it's a perfectly normal fi
 
 cards_slide("The move that actually matters", "I didn't fix the prompt myself. I asked AI to fix it.", [
     ("Why not write the spec by hand?", "Because \u201cwhat should a good Temporal spec contain\u201d is "
-     "itself a question worth delegating.", ACCENT_2),
-    ("What I asked for", "\u201cWould this be good for a coding-agent prompt?\u201d \u2014 then iterated "
-     "until the answer covered architecture, failure modes, and UI/UX explicitly.", ACCENT_2),
+     "itself a question worth delegating \u2014 the model already knows the shape of retries, "
+     "signals, queries, sagas, especially with a Temporal skill loaded for grounding.", ACCENT_2),
+    ("What I asked for", "\u201cWould this be good for a coding-agent prompt?\u201d \u2014 the answer "
+     "covered architecture, failure modes, and UI/UX explicitly.", ACCENT_2),
 ], cols=2, start_y=2.0, card_h=2.0,
     notes="Generalizable trick: use the model to interrogate its own upcoming task.")
 
@@ -600,9 +654,13 @@ folder_tree_slide("Architecture", "Inside the three packages", [
      "\u2502   \u251c\u2500\u2500 claim.workflow.ts\n"
      "\u2502   \u2514\u2500\u2500 fraud-check.workflow.ts\n"
      "\u251c\u2500\u2500 activities/\n"
-     "\u2502   \u251c\u2500\u2500 claim.activities.ts\n"
-     "\u2502   \u251c\u2500\u2500 fraud.activities.ts\n"
-     "\u2502   \u251c\u2500\u2500 payment.activities.ts\n"
+     "\u2502   \u251c\u2500\u2500 claim/\n"
+     "\u2502   \u2502   \u251c\u2500\u2500 validate-claim.ts\n"
+     "\u2502   \u2502   \u251c\u2500\u2500 process-payment.ts\n"
+     "\u2502   \u2502   \u2514\u2500\u2500 \u20268 more\n"
+     "\u2502   \u251c\u2500\u2500 fraud/\n"
+     "\u2502   \u2502   \u251c\u2500\u2500 check-watchlists.ts\n"
+     "\u2502   \u2502   \u2514\u2500\u2500 score-fraud-risk.ts\n"
      "\u2502   \u2514\u2500\u2500 simulation.ts\n"
      "\u251c\u2500\u2500 temporal/\n"
      "\u2502   \u2514\u2500\u2500 temporal-worker.service.ts\n"
@@ -614,7 +672,29 @@ folder_tree_slide("Architecture", "Inside the three packages", [
              "none of them redefine.",
    notes="Folder-level version of the architecture diagram. Each package has exactly one job: web "
          "renders and polls, api translates HTTP to Temporal client calls, worker is the only place "
-         "workflow and activity code lives.")
+         "workflow and activity code lives. Activities are one function per file, grouped by domain.")
+
+code_and_image_slide(
+    "Code \u2192 observability, for free",
+    "Four activity calls. One real execution timeline.",
+    "claim.workflow.ts \u2014 simplified",
+    "export async function claimWorkflow(input: ClaimInput) {\n"
+    "  const validation = await validateClaim(input);\n"
+    "  const coverage   = await verifyCoverage(input);\n"
+    "  const damage     = await assessDamage(input);\n"
+    "  const payment    = await processPayment(input);\n\n"
+    "  return { validation, coverage, damage, payment };\n"
+    "}",
+    "Temporal Web UI \u2014 Timeline tab",
+    os.path.join(ASSETS_DIR, "screenshots", "temporal-timeline-example.png"),
+    note_text="No custom logging, no tracing setup, no dashboard to build \u2014 every activity call "
+              "on the left shows up as a bar on the right the moment it runs.",
+    notes="This is the real Timeline tab from this app's Temporal Web UI, not a mockup. The code is "
+          "intentionally stripped down to four sequential activity calls \u2014 the real "
+          "claim.workflow.ts adds retries, a child workflow, timers and signals, and all of that "
+          "shows up on this same timeline with zero extra instrumentation code.",
+    font_size=13,
+)
 
 cards_slide("The Temporal bingo card", "What's actually demonstrated", [
     ("Retry policies", "per-stage, configurable backoff", SUCCESS),
@@ -632,7 +712,7 @@ cards_slide("The Temporal bingo card", "What's actually demonstrated", [
 ], cols=3, start_y=2.0, card_h=1.3, notes="Let it sit as a 'yes it really does all of this' moment.")
 
 section_slide("03", "Let's See It Run",
-    "Six short cuts. Real failures. Real recovery. No cuts hiding a crash.")
+    "Real failures. Real recovery. No cuts hiding a crash.")
 
 DEMOS = [
     ("DEMO 1 / 6", ACCENT, "Submit a claim, watch it run", "submit-and-progress.mp4",
@@ -678,7 +758,7 @@ demo_slide("BONUS", ACCENT, "The same story, from Temporal's Web UI", "temporal-
     notes="Remind the room: everything the dashboard showed is also just visible in Temporal's own UI.")
 
 section_slide("04", "Matching Your Use Case",
-    "Turning what we just saw into a checklist you can use on Monday.")
+    "Turning what we just saw into a checklist you can use.")
 
 bullets_slide("Pattern match", "Signals you have a good Temporal use case", [
     ("\u2713", "A process that spans minutes, days, or months \u2014 not one request/response"),
@@ -743,7 +823,7 @@ code_window_slide("Appendix A (continued)", "The improved prompt \u2014 capabili
 
 cards_slide("Appendix B", "Code map \u2014 where each capability lives", [
     ("Workflow logic", "packages/worker/src/workflows/claim.workflow.ts\npackages/worker/src/workflows/fraud-check.workflow.ts", ACCENT_2),
-    ("Activities & simulated failures", "packages/worker/src/activities/*.ts", ACCENT_2),
+    ("Activities & simulated failures", "packages/worker/src/activities/{claim,fraud}/*.ts", ACCENT_2),
     ("REST facade over Temporal", "packages/api/src/claims/claims.service.ts", ACCENT_2),
     ("Dashboard", "packages/web/src/pages/ClaimDetailPage.tsx", ACCENT_2),
 ], cols=2, start_y=2.0, card_h=1.6)

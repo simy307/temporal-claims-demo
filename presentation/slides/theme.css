@@ -200,7 +200,8 @@ html.reveal-full-page,
 .title-slide .subtitle {
   font-size: 0.62em;
   color: var(--muted);
-  max-width: 11em;
+  max-width: 24em;
+  line-height: 1.35;
   margin-top: 0.2em;
   font-weight: 500;
 }
@@ -251,7 +252,9 @@ html.reveal-full-page,
 .section-slide .section-sub {
   color: var(--muted);
   font-size: 0.55em;
-  max-width: 14em;
+  max-width: 26em;
+  line-height: 1.4;
+  margin-top: 0.25em;
 }
 
 /* ------------------------------------------------------------------ cards / grids */
@@ -405,6 +408,24 @@ html.reveal-full-page,
 
 .window-body .prompt-marker {
   color: var(--accent-2);
+}
+
+.window-body pre {
+  margin: 0;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  white-space: pre-wrap;
+}
+
+.window-body-image {
+  padding: 0;
+  line-height: 0;
+}
+
+.window-body-image img {
+  width: 100%;
+  display: block;
 }
 
 .prompt-quote {
