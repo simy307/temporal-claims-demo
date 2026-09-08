@@ -331,6 +331,74 @@
         </section>
 
         <!-- ============================================================ -->
+        <!-- 11a. FOLDER STRUCTURE OVERVIEW (DASHBOARD / API / WORKER)     -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="slide-kicker">Architecture</div>
+          <h2>Inside the three packages</h2>
+          <div class="grid cols-3" style="margin-top: 0.5em">
+            <div class="card">
+              <h4>packages/web — Dashboard</h4>
+              <pre class="folder-tree"><span class="ft-dir">src/</span>
+├── <span class="ft-dir">pages/</span>
+│   ├── DashboardPage.tsx
+│   └── ClaimDetailPage.tsx
+├── <span class="ft-dir">components/</span>
+│   ├── StageTimeline.tsx
+│   ├── ActionPanel.tsx
+│   ├── SimulationPanel.tsx
+│   └── …10 more
+├── <span class="ft-dir">hooks/</span>
+│   ├── usePolling.ts
+│   └── usePreferences.tsx
+└── <span class="ft-dir">lib/</span>
+    ├── api.ts
+    └── storage.ts</pre>
+            </div>
+            <div class="card tone-accent">
+              <h4>packages/api — REST facade</h4>
+              <pre class="folder-tree"><span class="ft-dir">src/</span>
+├── <span class="ft-dir">claims/</span>
+│   ├── claims.controller.ts
+│   ├── claims.service.ts
+│   ├── temporal.mappers.ts
+│   └── dto.ts
+├── <span class="ft-dir">temporal/</span>
+│   └── temporal.service.ts
+├── <span class="ft-dir">system/</span>
+│   └── system.controller.ts
+└── main.ts</pre>
+            </div>
+            <div class="card tone-success">
+              <h4>packages/worker — Workflows &amp; activities</h4>
+              <pre class="folder-tree"><span class="ft-dir">src/</span>
+├── <span class="ft-dir">workflows/</span>
+│   ├── claim.workflow.ts
+│   └── fraud-check.workflow.ts
+├── <span class="ft-dir">activities/</span>
+│   ├── claim.activities.ts
+│   ├── fraud.activities.ts
+│   ├── payment.activities.ts
+│   └── simulation.ts
+├── <span class="ft-dir">temporal/</span>
+│   └── temporal-worker.service.ts
+└── <span class="ft-dir">admin/</span>
+    └── admin.controller.ts</pre>
+            </div>
+          </div>
+          <p class="muted small" style="margin-top: 0.6em">
+            Plus <code>packages/shared</code> — request/response types, stage definitions and
+            progress math every package imports, none of them redefine.
+          </p>
+          <aside class="notes">
+            This is the folder-level version of the architecture diagram two slides back. The point
+            isn't the file names — it's that each package has exactly one job: web renders and
+            polls, api translates HTTP to Temporal client calls, worker is the only place workflow
+            and activity code lives. Nothing about a claim's state is duplicated between them.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
         <!-- 12. CAPABILITY CHECKLIST                                      -->
         <!-- ============================================================ -->
         <section>

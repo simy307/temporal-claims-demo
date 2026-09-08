@@ -266,6 +266,37 @@ def cards_slide(kicker, title, cards, notes="", cols=2, start_y=2.0, card_h=1.5,
     return s
 
 
+def folder_tree_slide(kicker, title, columns, note_text=None, notes=""):
+    """columns: list of (header, tree_text, accent_color) — three monospace file-tree windows
+    side by side, one per package."""
+    s = content_slide(kicker, title, notes)
+    left0 = Inches(0.7)
+    gap = Inches(0.3)
+    total_w = Inches(11.9)
+    cols = len(columns)
+    card_w = Emu(int((total_w - gap * (cols - 1)) / cols))
+    top = Inches(1.85)
+    height = Inches(4.3)
+    x = left0
+    for header, tree_text, color in columns:
+        rounded_card(s, x, top, card_w, height, border_color=color)
+        _, htf = add_textbox(s, x + Inches(0.18), top + Inches(0.12), card_w - Inches(0.36), Inches(0.5))
+        hp = htf.paragraphs[0]
+        hr = hp.add_run()
+        hr.text = header
+        style_run(hr, size=12, color=color, bold=True)
+        _, tf = add_textbox(s, x + Inches(0.22), top + Inches(0.62), card_w - Inches(0.4), height - Inches(0.8))
+        p = tf.paragraphs[0]
+        r = p.add_run()
+        r.text = tree_text
+        style_run(r, size=11, color=TEXT, font=FONT_CODE)
+        p.line_spacing = 1.25
+        x = Emu(int(x + card_w + gap))
+    if note_text:
+        add_body(s, note_text, Emu(int(top + height + Inches(0.22))), size=14)
+    return s
+
+
 def code_window_slide(kicker, title, label, code_text, notes="", font_size=13):
     s = content_slide(kicker, title, notes)
     left, top, width, height = Inches(0.7), Inches(2.0), Inches(11.9), Inches(2.6)
@@ -527,6 +558,59 @@ for i, (name, tag) in enumerate(stages):
     r2 = p2.add_run(); r2.text = tag; style_run(r2, size=11, color=ACCENT_2, font=FONT_CODE)
 add_body(s, "Every chip on this rail is a query result, live, from a running Temporal workflow.",
           Inches(5.2), size=14)
+
+folder_tree_slide("Architecture", "Inside the three packages", [
+    ("WEB \u2014 DASHBOARD",
+     "src/\n"
+     "\u251c\u2500\u2500 pages/\n"
+     "\u2502   \u251c\u2500\u2500 DashboardPage.tsx\n"
+     "\u2502   \u2514\u2500\u2500 ClaimDetailPage.tsx\n"
+     "\u251c\u2500\u2500 components/\n"
+     "\u2502   \u251c\u2500\u2500 StageTimeline.tsx\n"
+     "\u2502   \u251c\u2500\u2500 ActionPanel.tsx\n"
+     "\u2502   \u251c\u2500\u2500 SimulationPanel.tsx\n"
+     "\u2502   \u2514\u2500\u2500 \u202610 more\n"
+     "\u251c\u2500\u2500 hooks/\n"
+     "\u2502   \u251c\u2500\u2500 usePolling.ts\n"
+     "\u2502   \u2514\u2500\u2500 usePreferences.tsx\n"
+     "\u2514\u2500\u2500 lib/\n"
+     "    \u251c\u2500\u2500 api.ts\n"
+     "    \u2514\u2500\u2500 storage.ts",
+     ACCENT_2),
+    ("API \u2014 REST FACADE",
+     "src/\n"
+     "\u251c\u2500\u2500 claims/\n"
+     "\u2502   \u251c\u2500\u2500 claims.controller.ts\n"
+     "\u2502   \u251c\u2500\u2500 claims.service.ts\n"
+     "\u2502   \u251c\u2500\u2500 temporal.mappers.ts\n"
+     "\u2502   \u2514\u2500\u2500 dto.ts\n"
+     "\u251c\u2500\u2500 temporal/\n"
+     "\u2502   \u2514\u2500\u2500 temporal.service.ts\n"
+     "\u251c\u2500\u2500 system/\n"
+     "\u2502   \u2514\u2500\u2500 system.controller.ts\n"
+     "\u2514\u2500\u2500 main.ts",
+     ACCENT),
+    ("WORKER \u2014 WORKFLOWS & ACTIVITIES",
+     "src/\n"
+     "\u251c\u2500\u2500 workflows/\n"
+     "\u2502   \u251c\u2500\u2500 claim.workflow.ts\n"
+     "\u2502   \u2514\u2500\u2500 fraud-check.workflow.ts\n"
+     "\u251c\u2500\u2500 activities/\n"
+     "\u2502   \u251c\u2500\u2500 claim.activities.ts\n"
+     "\u2502   \u251c\u2500\u2500 fraud.activities.ts\n"
+     "\u2502   \u251c\u2500\u2500 payment.activities.ts\n"
+     "\u2502   \u2514\u2500\u2500 simulation.ts\n"
+     "\u251c\u2500\u2500 temporal/\n"
+     "\u2502   \u2514\u2500\u2500 temporal-worker.service.ts\n"
+     "\u2514\u2500\u2500 admin/\n"
+     "    \u2514\u2500\u2500 admin.controller.ts",
+     SUCCESS),
+], note_text="packages/web, packages/api, packages/worker \u2014 plus packages/shared for the "
+             "request/response types, stage definitions and progress math every package imports, "
+             "none of them redefine.",
+   notes="Folder-level version of the architecture diagram. Each package has exactly one job: web "
+         "renders and polls, api translates HTTP to Temporal client calls, worker is the only place "
+         "workflow and activity code lives.")
 
 cards_slide("The Temporal bingo card", "What's actually demonstrated", [
     ("Retry policies", "per-stage, configurable backoff", SUCCESS),

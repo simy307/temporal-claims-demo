@@ -497,6 +497,22 @@ html.reveal-full-page,
   margin-top: 0.25em;
 }
 
+/* ------------------------------------------------------------------ folder-tree cards */
+
+.folder-tree {
+  font-family: var(--r-code-font);
+  font-size: 0.4em;
+  line-height: 1.4;
+  color: var(--muted);
+  white-space: pre;
+  margin: 0;
+}
+
+.folder-tree .ft-dir {
+  color: var(--accent-2);
+  font-weight: 600;
+}
+
 /* ------------------------------------------------------------------ demo cut-in slides */
 
 .demo-slide {
