@@ -1,6 +1,6 @@
 import { activityInfo, log } from '@temporalio/activity';
 import type { PaymentResult, SimulationConfig } from '@claims/shared';
-import { simulateExternalCall } from './simulation';
+import { simulateExternalCall } from '../simulation';
 
 export interface PaymentRequest {
   claimId: string;
@@ -27,9 +27,4 @@ export async function processPayment(request: PaymentRequest): Promise<PaymentRe
   };
   log.info('Payment issued', { ...result, attempt });
   return result;
-}
-
-/** Compensating action used when a paid claim is cancelled. */
-export async function reversePayment(paymentId: string, reason: string): Promise<void> {
-  log.warn('Reversing payment', { paymentId, reason });
 }

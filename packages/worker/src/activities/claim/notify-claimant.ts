@@ -15,8 +15,3 @@ export async function notifyClaimant(notification: ClaimantNotification): Promis
     subject: notification.subject,
   });
 }
-
-/** Pretends to page the adjuster queue (used by the review reminder timer). */
-export async function notifyAdjuster(claimId: string, message: string): Promise<void> {
-  log.info('Notifying adjuster queue', { claimId, message });
-}
