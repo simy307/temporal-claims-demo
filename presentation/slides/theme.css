@@ -532,6 +532,110 @@ html.reveal-full-page,
   background: #000;
 }
 
+/* Custom control bar (see assets/js/video-controls.js for why this replaces native controls) */
+
+.demo-video-controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.45em 0.8em;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0));
+  font-size: 0.32em;
+  color: #fff;
+}
+
+.dvc-playpause,
+.dvc-fullscreen {
+  flex: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dvc-fullscreen {
+  border: none;
+  background: transparent;
+  font-size: 1.15em;
+}
+
+.dvc-playpause {
+  width: 2.2em;
+  height: 2.2em;
+  border-radius: 50%;
+  font-size: 1em;
+}
+
+.dvc-playpause:hover,
+.dvc-fullscreen:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.dvc-time,
+.dvc-duration {
+  flex: none;
+  min-width: 2.6em;
+  text-align: center;
+  font-family: var(--r-code-font);
+  font-size: 0.85em;
+}
+
+.dvc-seek {
+  position: relative;
+  flex: 1;
+  height: 1.6em;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.dvc-seek::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 4px;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.28);
+  border-radius: 4px;
+}
+
+.dvc-seek-fill {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 4px;
+  width: 0%;
+  transform: translateY(-50%);
+  background: var(--accent);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.dvc-seek-handle {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 2px var(--accent);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
 .demo-placeholder {
   text-align: center;
   color: var(--muted);

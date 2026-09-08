@@ -377,7 +377,7 @@
               <h2><span class="badge b-accent">DEMO 1 / 6</span>&nbsp; Submit a claim, watch it run</h2>
             </div>
             <div class="demo-video-frame">
-              <video src="../recordings/01-submit-and-progress.mp4" poster="../assets/posters/01-submit-and-progress.jpg" controls preload="metadata"></video>
+              <video src="../recordings/01-submit-and-progress.mp4" poster="../assets/posters/01-submit-and-progress.jpg" preload="metadata"></video>
             </div>
             <div class="demo-talking-points">
               <span>Dashboard → Submit claim → live redirect</span>
@@ -401,7 +401,7 @@
               <h2><span class="badge b-waiting">DEMO 2 / 6</span>&nbsp; The workflow waits — forever — for you</h2>
             </div>
             <div class="demo-video-frame">
-              <video src="../recordings/02-human-review-signals.mp4" poster="../assets/posters/02-human-review-signals.jpg" controls preload="metadata"></video>
+              <video src="../recordings/02-human-review-signals.mp4" poster="../assets/posters/02-human-review-signals.jpg" preload="metadata"></video>
             </div>
             <div class="demo-talking-points">
               <span>Claim parks at "Human adjuster review"</span>
@@ -425,7 +425,7 @@
               <h2><span class="badge b-warning">DEMO 3 / 6</span>&nbsp; Break it a little — watch it heal itself</h2>
             </div>
             <div class="demo-video-frame">
-              <video src="../recordings/03-transient-retry.mp4" poster="../assets/posters/03-transient-retry.jpg" controls preload="metadata"></video>
+              <video src="../recordings/03-transient-retry.mp4" poster="../assets/posters/03-transient-retry.jpg" preload="metadata"></video>
             </div>
             <div class="demo-talking-points">
               <span>Arm "transient failure" on damage assessment</span>
@@ -449,7 +449,7 @@
               <h2><span class="badge b-error">DEMO 4 / 6</span>&nbsp; Break it for real — recover it from the UI</h2>
             </div>
             <div class="demo-video-frame">
-              <video src="../recordings/04-permanent-failure-recovery.mp4" poster="../assets/posters/04-permanent-failure-recovery.jpg" controls preload="metadata"></video>
+              <video src="../recordings/04-permanent-failure-recovery.mp4" poster="../assets/posters/04-permanent-failure-recovery.jpg" preload="metadata"></video>
             </div>
             <div class="demo-talking-points">
               <span>"Break payment (permanent)" → non-retryable ApplicationFailure</span>
@@ -473,7 +473,7 @@
               <h2><span class="badge b-success">DEMO 5 / 6</span>&nbsp; Kill the worker. Mid-claim. On purpose.</h2>
             </div>
             <div class="demo-video-frame">
-              <video src="../recordings/05-worker-restart-durability.mp4" poster="../assets/posters/05-worker-restart-durability.jpg" controls preload="metadata"></video>
+              <video src="../recordings/05-worker-restart-durability.mp4" poster="../assets/posters/05-worker-restart-durability.jpg" preload="metadata"></video>
             </div>
             <div class="demo-talking-points">
               <span>"Kill &amp; restart worker" while a claim is blocked</span>
@@ -498,7 +498,7 @@
               <h2><span class="badge b-muted">DEMO 6 / 6</span>&nbsp; Cancel mid-flight — compensations run</h2>
             </div>
             <div class="demo-video-frame">
-              <video src="../recordings/06-cancellation-saga.mp4" poster="../assets/posters/06-cancellation-saga.jpg" controls preload="metadata"></video>
+              <video src="../recordings/06-cancellation-saga.mp4" poster="../assets/posters/06-cancellation-saga.jpg" preload="metadata"></video>
             </div>
             <div class="demo-talking-points">
               <span>Cancel a running claim from the dashboard</span>
@@ -522,7 +522,7 @@
               <h2><span class="badge b-accent">BONUS</span>&nbsp; The same story, from Temporal's Web UI</h2>
             </div>
             <div class="demo-video-frame">
-              <video src="../recordings/07-temporal-web-ui-tour.mp4" poster="../assets/posters/07-temporal-web-ui-tour.jpg" controls preload="metadata"></video>
+              <video src="../recordings/07-temporal-web-ui-tour.mp4" poster="../assets/posters/07-temporal-web-ui-tour.jpg" preload="metadata"></video>
             </div>
             <div class="demo-talking-points">
               <span>Event history: every retry, timer, signal, child workflow</span>
@@ -776,6 +776,7 @@
 
     <script src="../node_modules/reveal.js/dist/reveal.js"></script>
     <script src="../node_modules/reveal.js/plugin/notes/notes.js"></script>
+    <script src="../assets/js/video-controls.js"></script>
     <script>
       Reveal.initialize({
         hash: true,
@@ -794,6 +795,7 @@
         // <video> elements at all, so without this every demo slide would print blank.
         if (location.search.includes('print-pdf')) {
           document.querySelectorAll('video[poster]').forEach((video) => {
+            const frame = video.closest('.demo-video-frame');
             const img = document.createElement('img');
             img.src = video.getAttribute('poster');
             img.style.width = '100%';
@@ -801,6 +803,8 @@
             img.style.objectFit = 'contain';
             img.style.background = '#000';
             video.replaceWith(img);
+            // The custom control bar (assets/js/video-controls.js) has nothing left to control.
+            frame?.querySelector('.demo-video-controls')?.remove();
           });
         }
       });

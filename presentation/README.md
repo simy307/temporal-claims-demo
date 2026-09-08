@@ -31,9 +31,28 @@ Open **http://localhost:8080/slides/index.html**, then:
 - The deck is fully self-contained (reveal.js and every recording are vendored locally) — no
   internet required at the venue.
 - Demo slides (`DEMO 1/6` … `DEMO 6/6`, plus the bonus Temporal Web UI tour) are real `<video>`
-  embeds with click-to-play controls, each backed by an actual captured run of the live demo
-  stack (not a mockup). Re-record any of them with `node scripts/record/0N-*.mjs` — see
-  "Re-recording a demo" below.
+  embeds with a custom play/seek control bar (see "Video playback" below), each backed by an
+  actual captured run of the live demo stack (not a mockup). Re-record any of them with
+  `node scripts/record/0N-*.mjs` — see "Re-recording a demo" below.
+
+## Video playback (custom controls)
+
+The demo videos use a small custom control bar (`assets/js/video-controls.js`) instead of the
+browser's native `<video controls>`, for two reasons found while presenting:
+
+1. **reveal.js hijacks arrow keys.** Its global keyboard handler only excludes `<input>`/`<textarea>`
+   from triggering slide navigation — it does not exclude `<video>` — so pressing → to seek a
+   focused native scrubber changed the *slide* instead. The custom seek bar stops its own keydown
+   events from bubbling up to reveal.js, so arrow keys seek the video as expected.
+2. **Seeking requires a Range-capable static server.** `npm start` now runs `http-server` (added as
+   a devDependency) instead of `python3 -m http.server`, which does not honor `Range` request
+   headers at all — every seek attempt silently failed because the browser could never fetch a
+   byte range beyond what had already streamed in order. If you serve this folder with something
+   else, confirm it returns `206 Partial Content` for a ranged request, or skip/rewind will look
+   broken again regardless of the control bar.
+
+The bar supports click-to-seek, drag-to-seek, play/pause, arrow-key seeking (±5s), a time/duration
+readout, and fullscreen — full details in the script's header comment.
 
 ## Re-recording a demo
 
@@ -62,6 +81,23 @@ ffmpeg -y -ss 21 -i recordings/05-worker-restart-durability.mp4 \
 Requires a full `ffmpeg` build with libx264 (`brew install ffmpeg`) — the ffmpeg bundled with
 Playwright is a stripped-down webm/vp8-only build and can't produce the `.mp4` files the deck uses.
 
+**If a step types text on camera**, use Playwright's `locator.pressSequentially(text, { delay: 45 })`
+instead of `.fill()`. `.fill()` sets the value instantly, which reads as a jump-cut once slowed down
+and gives the audience nothing to read. `pressSequentially` types character-by-character, and should
+be followed by a ~2–3s pause on the completed text before clicking the next button.
+
+**For any on-camera scroll or click**, use the `record-helpers.mjs` helpers instead of Playwright's
+raw APIs, so the audience can actually follow the action:
+
+- `smoothScrollTo(page, locator)` — replaces `locator.scrollIntoViewIfNeeded()`, which jumps
+  instantly. This scrolls with a native smooth animation instead.
+- `clickWithEmphasis(page, locator)` — replaces `locator.click()`. Moves a small fake cursor overlay
+  to the element with a visible glide, flashes a click ripple, then performs the real click. Without
+  this, Playwright's synthetic clicks are invisible on screen and a viewer can't tell what was
+  pressed. Call `installCursorOverlay(page)` once per recording before using it.
+
+See `scripts/record/02-human-review-signals.mjs` for the reference pattern combining all of these.
+
 ## Demo recordings reference
 
 All recordings play at **0.5× speed** (the source capture is double-speed relative to these
@@ -70,7 +106,7 @@ durations) so the audience has time to read the UI as it updates.
 | File | Duration | Slide | Shows |
 | --- | --- | --- | --- |
 | `01-submit-and-progress.mp4` | 0:20 | Demo 1/6 | Submitting via the real form; live stage timeline via polling |
-| `02-human-review-signals.mp4` | 0:27 | Demo 2/6 | Indefinite wait signal; request-info ↔ provide-info round trip; approve → paid |
+| `02-human-review-signals.mp4` | 0:56 | Demo 2/6 | Indefinite wait signal; request-info ↔ provide-info round trip (typed on camera at a readable pace, smooth scroll, emphasized clicks); approve → paid |
 | `03-transient-retry.mp4` | 0:23 | Demo 3/6 | Live attempt counter climbing on a retry policy, zero custom retry code |
 | `04-permanent-failure-recovery.mp4` | 0:29 | Demo 4/6 | Non-retryable failure parks the workflow; UI-driven recovery signal |
 | `05-worker-restart-durability.mp4` | 1:06 | Demo 5/6 | **The centerpiece** — kill & restart the real worker process mid-claim; state survives |
@@ -78,7 +114,9 @@ durations) so the audience has time to read the UI as it updates.
 | `07-temporal-web-ui-tour.mp4` | 0:29 | Bonus | Search-attribute query, live `getClaimState` query, the fraud child workflow — all in Temporal's own Web UI |
 
 All 7 were captured against the real running stack (no staging/mocking) — worker generations,
-timestamps and query results in the videos are genuine.
+timestamps and query results in the videos are genuine. Demo 2 currently is the reference example
+for the smooth-scroll/click-emphasis treatment; the same helpers can be applied to the others by
+following the pattern in `scripts/record/02-human-review-signals.mjs`.
 
 ## Regenerating the PDF / pptx after editing the HTML deck
 

@@ -4,11 +4,12 @@
   "private": true,
   "description": "Slides for 'Lifting the Veil: How to Match Your Use Case and Temporal'",
   "scripts": {
-    "start": "python3 -m http.server 8080",
+    "start": "http-server . -p 8080 -c-1",
     "qa": "node scripts/shoot-slides.mjs",
     "pdf": "node scripts/export-pdf.mjs"
   },
   "devDependencies": {
+    "http-server": "^14.1.1",
     "playwright": "^1.63.0",
     "reveal.js": "^5.1.0"
   }
