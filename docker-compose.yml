@@ -1,0 +1,94 @@
+# Temporal claims demo.
+#
+#   docker compose up temporal              # just the Temporal dev server + Web UI
+#   docker compose --profile app up --build # Temporal + worker + API + dashboard
+#
+# The Temporal dev server keeps its state in an in-container SQLite file, so there is no separate
+# database service and no application database anywhere in this demo.
+
+services:
+  temporal:
+    image: temporalio/temporal:latest
+    container_name: claims-temporal
+    command:
+      - server
+      - start-dev
+      - --ip
+      - 0.0.0.0
+      - --port
+      - '7233'
+      - --ui-port
+      - '8233'
+      - --db-filename
+      - /home/temporal/claims-demo.db
+      - --search-attribute
+      - ClaimStatus=Keyword
+      - --search-attribute
+      - ClaimType=Keyword
+      - --search-attribute
+      - Policyholder=Keyword
+      - --search-attribute
+      - ClaimAmount=Double
+      - --search-attribute
+      - FraudScore=Double
+    ports:
+      - '7233:7233' # gRPC
+      - '8233:8233' # Temporal Web UI
+    volumes:
+      - temporal-data:/home/temporal
+    healthcheck:
+      test: ['CMD', 'temporal', 'operator', 'cluster', 'health', '--address', 'localhost:7233']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  worker:
+    profiles: ['app']
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.node
+      target: worker
+    container_name: claims-worker
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+      WORKER_ADMIN_PORT: '3100'
+    ports:
+      - '3100:3100'
+    depends_on:
+      temporal:
+        condition: service_healthy
+    restart: unless-stopped
+
+  api:
+    profiles: ['app']
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.node
+      target: api
+    container_name: claims-api
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+      WORKER_ADMIN_URL: http://worker:3100
+      TEMPORAL_UI_URL: http://localhost:8233
+      API_PORT: '3000'
+    ports:
+      - '3000:3000'
+    depends_on:
+      temporal:
+        condition: service_healthy
+    restart: unless-stopped
+
+  web:
+    profiles: ['app']
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.web
+      target: web
+    container_name: claims-web
+    ports:
+      - '5173:80'
+    depends_on:
+      - api
+
+volumes:
+  temporal-data:

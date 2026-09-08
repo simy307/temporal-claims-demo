@@ -1,0 +1,40 @@
+{
+  "name": "@claims/worker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NestJS process that hosts the Temporal worker, workflow definitions and activity implementations",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "node supervisor.mjs",
+    "start:once": "ts-node --transpile-only src/main.ts",
+    "start:prod": "node supervisor.mjs --prod",
+    "test": "jest --runInBand",
+    "test:unit": "jest --runInBand test/unit",
+    "test:integration": "jest --runInBand test/integration",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@claims/shared": "1.0.0",
+    "@nestjs/common": "^11.2.3",
+    "@nestjs/core": "^11.2.3",
+    "@nestjs/platform-express": "^11.2.3",
+    "@temporalio/activity": "^1.23.0",
+    "@temporalio/client": "^1.23.0",
+    "@temporalio/common": "^1.23.0",
+    "@temporalio/worker": "^1.23.0",
+    "@temporalio/workflow": "^1.23.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@temporalio/testing": "^1.23.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.19.0",
+    "jest": "^30.5.1",
+    "ts-jest": "^29.4.12",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.9.3"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "@claims/api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NestJS REST API that talks to Temporal on behalf of the React dashboard",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "ts-node --transpile-only src/main.ts",
+    "start:prod": "node dist/main.js",
+    "setup:search-attributes": "ts-node --transpile-only src/scripts/setup-search-attributes.ts",
+    "test": "jest --runInBand",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@claims/shared": "1.0.0",
+    "@nestjs/common": "^11.2.3",
+    "@nestjs/core": "^11.2.3",
+    "@nestjs/platform-express": "^11.2.3",
+    "@temporalio/client": "^1.23.0",
+    "@temporalio/common": "^1.23.0",
+    "@temporalio/proto": "^1.23.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.19.0",
+    "jest": "^30.5.1",
+    "ts-jest": "^29.4.12",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.9.3"
+  }
+}

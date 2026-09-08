@@ -1,0 +1,44 @@
+# Multi-stage build shared by the API and the worker.
+# Build:  docker build -f docker/Dockerfile.node --target api .
+FROM node:22-slim AS base
+WORKDIR /app
+ENV npm_config_registry=https://registry.npmjs.org/
+COPY package.json package-lock.json ./
+COPY packages/shared/package.json packages/shared/
+COPY packages/worker/package.json packages/worker/
+COPY packages/api/package.json packages/api/
+COPY packages/web/package.json packages/web/
+RUN npm ci
+
+FROM base AS build
+COPY tsconfig.base.json ./
+COPY packages/shared packages/shared
+COPY packages/worker packages/worker
+COPY packages/api packages/api
+RUN npm run build -w @claims/shared \
+  && npm run build -w @claims/worker \
+  && npm run build -w @claims/api
+
+FROM node:22-slim AS api
+WORKDIR /app
+ENV NODE_ENV=production
+# Copy the whole workspace folders: npm may nest some dependencies under a workspace
+# (packages/api/node_modules) rather than hoisting them to the root.
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/packages/shared ./packages/shared
+COPY --from=build /app/packages/api ./packages/api
+EXPOSE 3000
+CMD ["node", "packages/api/dist/main.js"]
+
+FROM node:22-slim AS worker
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/packages/shared ./packages/shared
+COPY --from=build /app/packages/worker ./packages/worker
+WORKDIR /app/packages/worker
+EXPOSE 3100
+# The supervisor restarts the worker when the dashboard asks for a restart (exit code 17).
+CMD ["node", "supervisor.mjs", "--prod"]

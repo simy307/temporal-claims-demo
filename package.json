@@ -1,0 +1,53 @@
+{
+  "name": "temporal-claims-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Insurance claim processing demo built on Temporal (TypeScript SDK), NestJS and React",
+  "license": "MIT",
+  "workspaces": [
+    "packages/shared",
+    "packages/worker",
+    "packages/api",
+    "packages/web"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "build:shared": "npm run build -w @claims/shared",
+    "build": "npm run build:shared && npm run build -w @claims/worker && npm run build -w @claims/api && npm run build -w @claims/web",
+    "typecheck": "npm run build:shared && npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "pretest": "npm run build:shared",
+    "test": "npm run test -w @claims/worker && npm run test -w @claims/api",
+    "test:unit": "npm run test:unit -w @claims/worker && npm run test -w @claims/api",
+    "test:integration": "npm run test:integration -w @claims/worker",
+    "pretemporal": "node -e \"require('fs').mkdirSync('.temporal', { recursive: true })\"",
+    "temporal": "temporal server start-dev --ip 0.0.0.0 --port 7233 --ui-port 8233 --db-filename .temporal/claims-demo.db --search-attribute ClaimStatus=Keyword --search-attribute ClaimType=Keyword --search-attribute Policyholder=Keyword --search-attribute ClaimAmount=Double --search-attribute FraudScore=Double",
+    "preworker": "npm run build:shared",
+    "worker": "npm run start -w @claims/worker",
+    "preapi": "npm run build:shared",
+    "api": "npm run start -w @claims/api",
+    "web": "npm run dev -w @claims/web",
+    "predev": "npm run build:shared",
+    "dev": "concurrently -k -n temporal,worker,api,web -c magenta,cyan,green,yellow \"npm:temporal\" \"npm:worker\" \"npm:api\" \"npm:web\"",
+    "predev:app": "npm run build:shared",
+    "dev:app": "concurrently -k -n worker,api,web -c cyan,green,yellow \"npm:worker\" \"npm:api\" \"npm:web\"",
+    "setup:search-attributes": "npm run setup:search-attributes -w @claims/api",
+    "seed": "node scripts/seed.mjs",
+    "clean": "rimraf packages/*/dist packages/*/tsconfig.tsbuildinfo packages/web/node_modules/.vite"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "concurrently": "^10.0.5",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.6",
+    "rimraf": "^6.1.3",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.4"
+  }
+}

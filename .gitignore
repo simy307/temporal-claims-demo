@@ -1,0 +1,11 @@
+node_modules/
+dist/
+build/
+coverage/
+.temporal/
+*.tsbuildinfo
+.env
+.env.local
+.DS_Store
+npm-debug.log*
+packages/web/node_modules/.vite/
