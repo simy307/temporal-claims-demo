@@ -407,7 +407,7 @@ html.reveal-full-page,
 }
 
 .window-body.code-compact {
-  font-size: 0.56em;
+  font-size: 0.42em;
   line-height: 1.5;
 }
 
@@ -761,7 +761,12 @@ html.reveal-full-page,
 .stack-col {
   display: flex;
   flex-direction: column;
-  gap: 0.7em;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.stack-col .window {
+  width: 62%;
 }
 
 .checklist {

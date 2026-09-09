@@ -306,13 +306,13 @@ def code_and_image_slide(
 ):
     """Two stacked "windows": a code block on top, a screenshot below."""
     s = content_slide(kicker, title, notes)
-    full_w = Inches(11.9)
-    x = Inches(0.7)
+    full_w = Inches(9.0)
+    x = Emu(int((Inches(13.33) - full_w) / 2))
     top1 = Inches(1.75)
-    height1 = Inches(2.55)
-    gap = Inches(0.25)
+    height1 = Inches(2.35)
+    gap = Inches(0.2)
     top2 = Emu(int(top1 + height1 + gap))
-    height2 = Inches(2.55)
+    height2 = Inches(2.15)
 
     # Top: code window.
     rounded_card(s, x, top1, full_w, height1, fill=CODE_BG)
@@ -706,7 +706,7 @@ code_and_image_slide(
           "The code on the left is the entire body \u2014 just a proxyActivities call and three "
           "activity invocations, two of them running in parallel. That parallelism is exactly what "
           "you see as two overlapping bars on the right, with zero extra instrumentation code.",
-    font_size=16,
+    font_size=12,
 )
 
 cards_slide("The Temporal bingo card", "What's actually demonstrated", [
