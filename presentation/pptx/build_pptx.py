@@ -375,6 +375,10 @@ def code_window_slide(kicker, title, label, code_text, notes="", font_size=13):
     return s
 
 
+RECORDINGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "recordings")
+POSTERS_DIR = os.path.join(ASSETS_DIR, "posters")
+
+
 def demo_slide(badge_text, badge_color, title, filename, path_hint, talking_points, notes=""):
     s = new_slide()
     _, btf = add_textbox(s, Inches(0.7), Inches(0.5), Inches(2.2), Inches(0.5))
@@ -388,27 +392,44 @@ def demo_slide(badge_text, badge_color, title, filename, path_hint, talking_poin
     r.text = title
     style_run(r, size=28, color=TEXT, bold=True)
 
-    frame = rounded_card(s, Inches(0.7), Inches(1.3), Inches(11.9), Inches(4.6), fill=RGBColor(0x05, 0x06, 0x0C), border_color=ACCENT)
-    # Play icon (triangle) + filename, centered.
-    play = s.shapes.add_shape(MSO_SHAPE.ISOSCELES_TRIANGLE, Inches(6.2), Inches(3.0), Inches(0.9), Inches(0.9))
-    play.rotation = 90
-    play.fill.solid(); play.fill.fore_color.rgb = ACCENT
-    play.line.fill.background()
-    play.shadow.inherit = False
-    _, ftf = add_textbox(s, Inches(3.7), Inches(4.05), Inches(5.9), Inches(0.5))
-    fp = ftf.paragraphs[0]
-    fp.alignment = PP_ALIGN.CENTER
-    fr = fp.add_run()
-    fr.text = filename
-    style_run(fr, size=20, color=MUTED)
-    _, htf = add_textbox(s, Inches(3.7), Inches(4.5), Inches(5.9), Inches(0.4))
+    frame_x, frame_y = Inches(0.7), Inches(1.3)
+    frame_w, frame_h = Inches(11.9), Inches(4.6)
+    rounded_card(s, frame_x, frame_y, frame_w, frame_h, fill=RGBColor(0x05, 0x06, 0x0C), border_color=ACCENT)
+
+    video_path = os.path.join(RECORDINGS_DIR, os.path.basename(path_hint))
+    poster_name = os.path.splitext(os.path.basename(path_hint))[0] + ".jpg"
+    poster_path = os.path.join(POSTERS_DIR, poster_name)
+    inset = Inches(0.15)
+    if os.path.exists(video_path):
+        poster_kwargs = {"poster_frame_image": poster_path} if os.path.exists(poster_path) else {}
+        s.shapes.add_movie(
+            video_path,
+            frame_x + inset, frame_y + inset,
+            frame_w - 2 * inset, frame_h - 2 * inset,
+            **poster_kwargs,
+        )
+    else:
+        # Fallback placeholder if the recording is missing at build time.
+        play = s.shapes.add_shape(MSO_SHAPE.ISOSCELES_TRIANGLE, Inches(6.2), Inches(3.0), Inches(0.9), Inches(0.9))
+        play.rotation = 90
+        play.fill.solid(); play.fill.fore_color.rgb = ACCENT
+        play.line.fill.background()
+        play.shadow.inherit = False
+        _, ftf = add_textbox(s, Inches(3.7), Inches(4.05), Inches(5.9), Inches(0.5))
+        fp = ftf.paragraphs[0]
+        fp.alignment = PP_ALIGN.CENTER
+        fr = fp.add_run()
+        fr.text = filename
+        style_run(fr, size=20, color=MUTED)
+
+    _, htf = add_textbox(s, Inches(3.7), Inches(5.95), Inches(5.9), Inches(0.3))
     hp = htf.paragraphs[0]
     hp.alignment = PP_ALIGN.CENTER
     hr = hp.add_run()
-    hr.text = path_hint
+    hr.text = f"{filename} \u2014 click to play"
     style_run(hr, size=12, color=RGBColor(0x6F, 0x77, 0x94), font=FONT_CODE)
 
-    _, ttf = add_textbox(s, Inches(0.7), Inches(6.15), Inches(11.9), Inches(1))
+    _, ttf = add_textbox(s, Inches(0.7), Inches(6.3), Inches(11.9), Inches(0.9))
     first = True
     for point in talking_points:
         p = ttf.paragraphs[0] if first else ttf.add_paragraph()
