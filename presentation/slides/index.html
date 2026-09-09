@@ -633,29 +633,6 @@
         </section>
 
         <!-- ============================================================ -->
-        <!-- 19. TEMPORAL WEB UI TOUR                                       -->
-        <!-- ============================================================ -->
-        <section>
-          <div class="demo-slide">
-            <div class="demo-header">
-              <h2><span class="badge b-accent">BONUS</span>&nbsp; The same story, from Temporal's Web UI</h2>
-            </div>
-            <div class="demo-video-frame">
-              <video src="../recordings/07-temporal-web-ui-tour.mp4" poster="../assets/posters/07-temporal-web-ui-tour.jpg" preload="metadata"></video>
-            </div>
-            <div class="demo-talking-points">
-              <span>Event history: every retry, timer, signal, child workflow</span>
-              <span>Search: ClaimStatus = "awaiting-review" AND FraudScore &gt;= 75</span>
-              <span>Run getClaimState as a raw query, no UI involved</span>
-            </div>
-          </div>
-          <aside class="notes">
-            Good moment to remind the room: everything the dashboard showed is also just... visible,
-            for free, in Temporal's own UI. The custom UI is a convenience layer, not a requirement.
-          </aside>
-        </section>
-
-        <!-- ============================================================ -->
         <!-- SECTION DIVIDER: PART 4                                       -->
         <!-- ============================================================ -->
         <section data-background-color="#0a0c16">
@@ -690,8 +667,8 @@
         <!-- 21. THE GENERALIZED PROMPT LESSON                              -->
         <!-- ============================================================ -->
         <section>
-          <div class="slide-kicker">The reusable trick</div>
-          <h2>Before you prompt: name the durability questions</h2>
+          <div class="slide-kicker">The reusable checklist</div>
+          <h2>Durability questions to ask yourself</h2>
           <div class="grid cols-2" style="margin-top: 0.6em">
             <div class="card">
               <h4>Ask about failure</h4>
@@ -713,12 +690,12 @@
             </div>
           </div>
           <p class="muted small" style="margin-top: 0.7em">
-            Answer these four categories in your prompt (or your design doc) and both AI agents and
-            human engineers will build the right thing on the first pass.
+            Answer these four categories before you design the system, and your Temporal model gets
+            much easier to see.
           </p>
           <aside class="notes">
-            This slide is the payoff of the whole talk — it's the generalized version of "the
-            improved prompt" from part 1, usable on literally any use case, not just claims.
+            This slide is the payoff of the whole talk — a generalized checklist for deciding whether
+            a process maps cleanly to Temporal, not just this insurance-claims example.
           </aside>
         </section>
 
@@ -746,24 +723,6 @@
             Literally invite people to paste their own use case into this template tonight. Mention
             the repo is public (link on the next slide) so they can see the exact result of this
             process end-to-end.
-          </aside>
-        </section>
-
-        <!-- ============================================================ -->
-        <!-- 23. RECAP                                                      -->
-        <!-- ============================================================ -->
-        <section>
-          <div class="statement-slide">
-            <div class="slide-kicker">Recap</div>
-            <div class="statement">
-              The veil isn't Temporal.
-              <br />It's <span class="accent-text">under-specified requirements.</span>
-            </div>
-            <div class="attribution">Name the failures, the waits, and the source of truth — Temporal
-              does the rest.</div>
-          </div>
-          <aside class="notes">
-            One breath, then move to resources and thank the room.
           </aside>
         </section>
 
@@ -804,8 +763,6 @@
           <div class="title-slide">
             <div class="brand-row"><span class="brand-mark">◈</span> Temporal · Engineering Talk</div>
             <h1>Thank you.</h1>
-            <div class="subtitle">Questions, war stories, and "would this work for my use case"
-              conversations welcome.</div>
           </div>
           <aside class="notes">
             Open the floor. Common questions to be ready for: versioning running workflows, Temporal
@@ -814,82 +771,6 @@
           </aside>
         </section>
 
-        <!-- ============================================================ -->
-        <!-- APPENDIX / BACKUP SLIDES                                       -->
-        <!-- ============================================================ -->
-        <section data-background-color="#0a0c16">
-          <div class="section-slide">
-            <div class="section-num">＋</div>
-            <h1>Backup Slides</h1>
-            <div class="section-sub">Full prompt text and a code map, for anyone who wants the
-              receipts.</div>
-          </div>
-        </section>
-
-        <section>
-          <div class="slide-kicker">Appendix A</div>
-          <h2>The improved prompt, in full</h2>
-          <div class="window" style="margin-top: 0.4em">
-            <div class="window-bar">
-              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-              <span class="label">chat — refined spec (excerpt 1/2)</span>
-            </div>
-            <div class="window-body" style="font-size: 0.38em">
-              I want to explore Temporal's capabilities by building a complete demonstration
-              application for an insurance claim process. Create a working monorepo using: Temporal
-              TypeScript SDK, a local Temporal development server, NestJS for the backend/API and
-              Temporal worker, React with TypeScript for the UI, Docker Compose where useful. Do not
-              use a database. Temporal must be the source of truth for workflow state and progress.
-              Browser localStorage may be used to preserve UI preferences and recently viewed workflow
-              IDs across refreshes, but it must not be treated as the authoritative workflow state.
-            </div>
-          </div>
-          <aside class="notes">Read at your own pace if someone asks to see the whole thing.</aside>
-        </section>
-
-        <section>
-          <div class="slide-kicker">Appendix A (continued)</div>
-          <h2>The improved prompt — capability list</h2>
-          <div class="window" style="margin-top: 0.4em">
-            <div class="window-bar">
-              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-              <span class="label">chat — refined spec (excerpt 2/2)</span>
-            </div>
-            <div class="window-body" style="font-size: 0.36em">
-              Activities with configurable retry policies · at least one timer or durable sleep · at
-              least one child workflow · at least one UI-driven signal where the workflow pauses for
-              human input · workflow queries that expose current state and progress · cancellation
-              handling · activity and workflow failure handling · a way to retry or recover from a
-              simulated failure · meaningful workflow IDs and search attributes · workflow history
-              remaining valid across worker restarts. The human-review step should wait indefinitely
-              for an adjuster to approve, deny, or request more information.
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <div class="slide-kicker">Appendix B</div>
-          <h2>Code map — where each capability lives</h2>
-          <div class="grid cols-2" style="margin-top: 0.5em">
-            <div class="card">
-              <h4>Workflow logic</h4>
-              <p><code>packages/worker/src/workflows/claim.workflow.ts</code></p>
-              <p><code>packages/worker/src/workflows/fraud-check.workflow.ts</code></p>
-            </div>
-            <div class="card">
-              <h4>Activities &amp; simulated failures</h4>
-              <p><code>packages/worker/src/activities/{claim,fraud}/*.ts</code></p>
-            </div>
-            <div class="card">
-              <h4>REST facade over Temporal</h4>
-              <p><code>packages/api/src/claims/claims.service.ts</code></p>
-            </div>
-            <div class="card">
-              <h4>Dashboard</h4>
-              <p><code>packages/web/src/pages/ClaimDetailPage.tsx</code></p>
-            </div>
-          </div>
-        </section>
       </div>
     </div>
 

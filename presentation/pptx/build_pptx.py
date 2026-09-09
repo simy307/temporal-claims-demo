@@ -805,13 +805,6 @@ DEMOS = [
 for badge, color, title, fname, path, points, notes in DEMOS:
     demo_slide(badge, color, title, fname, path, points, notes=notes)
 
-demo_slide("BONUS", ACCENT, "The same story, from Temporal's Web UI", "temporal-web-ui-tour.mp4",
-    "presentation/recordings/07-temporal-web-ui-tour.mp4",
-    ["Event history: every retry, timer, signal, child workflow",
-     "Search: ClaimStatus = \u201cawaiting-review\u201d AND FraudScore >= 75",
-     "Run getClaimState as a raw query, no UI involved"],
-    notes="Remind the room: everything the dashboard showed is also just visible in Temporal's own UI.")
-
 section_slide("04", "Matching Your Use Case",
     "Turning what we just saw into a checklist you can use.")
 
@@ -824,12 +817,13 @@ bullets_slide("Pattern match", "Signals you have a good Temporal use case", [
     ("\u2713", "Multiple steps must be undone together if a later one fails (saga)"),
 ], bullet_color=SUCCESS, notes="Ask the room how many already do 3+ of these with cron jobs and status columns.")
 
-cards_slide("The reusable trick", "Before you prompt: name the durability questions", [
+cards_slide("The reusable checklist", "Durability questions to ask yourself", [
     ("Ask about failure", "What activities can fail transiently? What's permanent? What must be non-retryable?", ACCENT_2),
     ("Ask about waiting", "What waits on a human? For how long? What happens if nobody answers?", ACCENT_2),
     ("Ask about state", "What must survive a crash? Who is the source of truth?", ACCENT_2),
     ("Ask about boundaries", "Where does UI end and API begin? Where does API end and worker begin?", ACCENT_2),
-], cols=2, start_y=2.0, card_h=2.0, notes="This slide is the payoff \u2014 generalized version of 'the improved prompt.'")
+], cols=2, start_y=2.0, card_h=2.0,
+    notes="This slide is the payoff \u2014 a generalized checklist for deciding whether a process maps cleanly to Temporal.")
 
 code_window_slide("Homework", "Try this yourself, this week", "prompt-template.txt",
     "> Here's my rough idea: [describe your process in 2-3 sentences]. Turn this into a spec "
@@ -839,11 +833,6 @@ code_window_slide("Homework", "Try this yourself, this week", "prompt-template.t
     "the UI/API/worker boundaries should be drawn. Then build it.",
     notes="Invite people to paste their own use case into this template tonight.", font_size=14)
 
-statement_slide("Recap",
-    [("The veil isn't Temporal.\n", False), ("It's ", False), ("under-specified requirements.", True)],
-    "Name the failures, the waits, and the source of truth \u2014 Temporal does the rest.",
-    notes="One breath, then move to resources.")
-
 cards_slide("Go build something", "Resources", [
     ("This demo", "Full source, README, tests \u2014 github.com/<you>/temporal-claims-demo", ACCENT_2),
     ("Temporal docs", "docs.temporal.io \u00b7 TypeScript SDK samples", ACCENT_2),
@@ -851,37 +840,8 @@ cards_slide("Go build something", "Resources", [
     ("The prompt template", "Previous slide \u2014 steal it, adapt it, use it on your own use case", ACCENT_2),
 ], cols=2, start_y=2.0, card_h=1.6, notes="Fill in your actual repo URL before the talk.")
 
-title_slide("", "Thank you.",
-    "Questions, war stories, and \u201cwould this work for my use case\u201d conversations welcome.",
-    [],
+title_slide("", "Thank you.", "", [],
     notes="Open the floor. Be ready for: versioning, Cloud vs self-hosted, payload limits, vs Airflow/Step Functions.")
-
-section_slide("+", "Backup Slides", "Full prompt text and a code map, for anyone who wants the receipts.")
-
-code_window_slide("Appendix A", "The improved prompt, in full", "chat \u2014 refined spec (1/2)",
-    "I want to explore Temporal's capabilities by building a complete demonstration application "
-    "for an insurance claim process. Create a working monorepo using: Temporal TypeScript SDK, a "
-    "local Temporal development server, NestJS for the backend/API and Temporal worker, React "
-    "with TypeScript for the UI, Docker Compose where useful. Do not use a database. Temporal "
-    "must be the source of truth for workflow state and progress. Browser localStorage may be "
-    "used to preserve UI preferences and recently viewed workflow IDs across refreshes, but it "
-    "must not be treated as the authoritative workflow state.", font_size=13)
-
-code_window_slide("Appendix A (continued)", "The improved prompt \u2014 capability list", "chat \u2014 refined spec (2/2)",
-    "Activities with configurable retry policies \u00b7 at least one timer or durable sleep \u00b7 at "
-    "least one child workflow \u00b7 at least one UI-driven signal where the workflow pauses for "
-    "human input \u00b7 workflow queries that expose current state and progress \u00b7 cancellation "
-    "handling \u00b7 activity and workflow failure handling \u00b7 a way to retry or recover from a "
-    "simulated failure \u00b7 meaningful workflow IDs and search attributes \u00b7 workflow history "
-    "remaining valid across worker restarts. The human-review step should wait indefinitely for "
-    "an adjuster to approve, deny, or request more information.", font_size=13)
-
-cards_slide("Appendix B", "Code map \u2014 where each capability lives", [
-    ("Workflow logic", "packages/worker/src/workflows/claim.workflow.ts\npackages/worker/src/workflows/fraud-check.workflow.ts", ACCENT_2),
-    ("Activities & simulated failures", "packages/worker/src/activities/{claim,fraud}/*.ts", ACCENT_2),
-    ("REST facade over Temporal", "packages/api/src/claims/claims.service.ts", ACCENT_2),
-    ("Dashboard", "packages/web/src/pages/ClaimDetailPage.tsx", ACCENT_2),
-], cols=2, start_y=2.0, card_h=1.6)
 
 out_path = "Lifting-the-Veil-Temporal-Talk.pptx"
 prs.save(out_path)
