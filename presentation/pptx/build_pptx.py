@@ -834,7 +834,7 @@ code_window_slide("Homework", "Try this yourself, this week", "prompt-template.t
     notes="Invite people to paste their own use case into this template tonight.", font_size=14)
 
 cards_slide("Go build something", "Resources", [
-    ("This demo", "Full source, README, tests \u2014 github.com/<you>/temporal-claims-demo", ACCENT_2),
+    ("This demo", "Full source, README, tests \u2014 github.com/simy307/temporal-claims-demo", ACCENT_2),
     ("Temporal docs", "docs.temporal.io \u00b7 TypeScript SDK samples", ACCENT_2),
     ("Community", "Temporal Slack \u00b7 community forum \u00b7 local meetups", ACCENT_2),
     ("The prompt template", "Previous slide \u2014 steal it, adapt it, use it on your own use case", ACCENT_2),
