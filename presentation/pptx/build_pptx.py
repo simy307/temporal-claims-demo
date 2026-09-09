@@ -11,6 +11,7 @@ Run: /path/to/venv/bin/python presentation/pptx/build_pptx.py
 from __future__ import annotations
 
 import os
+import subprocess
 
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
@@ -379,6 +380,20 @@ RECORDINGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", 
 POSTERS_DIR = os.path.join(ASSETS_DIR, "posters")
 
 
+def get_video_dimensions(path):
+    """Return (width, height) of a video via ffprobe, or None if unavailable."""
+    try:
+        out = subprocess.check_output(
+            ["ffprobe", "-v", "error", "-select_streams", "v:0",
+             "-show_entries", "stream=width,height", "-of", "csv=p=0", path],
+            stderr=subprocess.DEVNULL,
+        ).decode().strip()
+        w, h = out.split(",")
+        return int(w), int(h)
+    except Exception:
+        return None
+
+
 def demo_slide(badge_text, badge_color, title, filename, path_hint, talking_points, notes=""):
     s = new_slide()
     _, btf = add_textbox(s, Inches(0.7), Inches(0.5), Inches(2.2), Inches(0.5))
@@ -400,12 +415,26 @@ def demo_slide(badge_text, badge_color, title, filename, path_hint, talking_poin
     poster_name = os.path.splitext(os.path.basename(path_hint))[0] + ".jpg"
     poster_path = os.path.join(POSTERS_DIR, poster_name)
     inset = Inches(0.15)
+    avail_w = frame_w - 2 * inset
+    avail_h = frame_h - 2 * inset
     if os.path.exists(video_path):
+        # Preserve the recording's real 16:9 aspect ratio instead of stretching it to
+        # fill the (wider) frame — fit within avail_w x avail_h and center.
+        vid_w, vid_h = get_video_dimensions(video_path) or (1280, 720)
+        aspect = vid_w / vid_h
+        if avail_w / avail_h > aspect:
+            movie_h = avail_h
+            movie_w = Emu(int(movie_h * aspect))
+        else:
+            movie_w = avail_w
+            movie_h = Emu(int(movie_w / aspect))
+        movie_x = Emu(int(frame_x + (frame_w - movie_w) / 2))
+        movie_y = Emu(int(frame_y + (frame_h - movie_h) / 2))
         poster_kwargs = {"poster_frame_image": poster_path} if os.path.exists(poster_path) else {}
         s.shapes.add_movie(
             video_path,
-            frame_x + inset, frame_y + inset,
-            frame_w - 2 * inset, frame_h - 2 * inset,
+            movie_x, movie_y,
+            movie_w, movie_h,
             **poster_kwargs,
         )
     else:
