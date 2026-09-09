@@ -308,11 +308,11 @@ def code_and_image_slide(
     s = content_slide(kicker, title, notes)
     full_w = Inches(9.0)
     x = Emu(int((Inches(13.33) - full_w) / 2))
-    top1 = Inches(1.75)
-    height1 = Inches(2.35)
-    gap = Inches(0.2)
+    top1 = Inches(1.6)
+    height1 = Inches(3.05)
+    gap = Inches(0.1)
     top2 = Emu(int(top1 + height1 + gap))
-    height2 = Inches(2.15)
+    height2 = Inches(1.6)
 
     # Top: code window.
     rounded_card(s, x, top1, full_w, height1, fill=CODE_BG)
@@ -681,22 +681,14 @@ code_and_image_slide(
     "Code \u2192 observability, for free",
     "Three activity calls. One real execution timeline.",
     "fraud-check.workflow.ts \u2014 simplified",
-    "const {\n"
-    "  checkClaimHistory,\n"
-    "  checkWatchlists,\n"
-    "  scoreFraudRisk,\n"
-    "} = proxyActivities<typeof activities>({ ...retryPolicy });\n\n"
-    "export async function fraudCheckWorkflow(\n"
-    "  input: ClaimInput,\n"
-    ") {\n"
+    "const { checkClaimHistory, checkWatchlists, scoreFraudRisk } =\n"
+    "  proxyActivities<typeof activities>({ ...retryPolicy });\n\n"
+    "export async function fraudCheckWorkflow(input: ClaimInput) {\n"
     "  const [history, watchlist] = await Promise.all([\n"
     "    checkClaimHistory(input),\n"
     "    checkWatchlists(input),\n"
     "  ]);\n"
-    "  return await scoreFraudRisk(\n"
-    "    input.claimId,\n"
-    "    [...history, ...watchlist],\n"
-    "  );\n"
+    "  return await scoreFraudRisk(input.claimId, [...history, ...watchlist]);\n"
     "}",
     "Temporal Web UI \u2014 Timeline tab",
     os.path.join(ASSETS_DIR, "screenshots", "temporal-timeline-fraud-example.png"),
