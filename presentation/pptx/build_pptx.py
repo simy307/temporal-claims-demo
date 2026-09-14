@@ -743,11 +743,11 @@ code_and_image_slide(
     "Temporal Web UI \u2014 Timeline tab",
     os.path.join(ASSETS_DIR, "screenshots", "temporal-timeline-fraud-example.png"),
     note_text="No custom logging, no tracing setup, no dashboard to build \u2014 every activity call "
-              "on the left shows up as a bar on the right the moment it runs.",
+              "at the top shows up as a bar at the bottom the moment it runs.",
     notes="This is the real Timeline tab for this app's fraud-check child workflow, not a mockup. "
-          "The code on the left is the entire body \u2014 just a proxyActivities call and three "
+          "The code on top is the entire body \u2014 just a proxyActivities call and three "
           "activity invocations, two of them running in parallel. That parallelism is exactly what "
-          "you see as two overlapping bars on the right, with zero extra instrumentation code.",
+          "you see as two overlapping bars below, with zero extra instrumentation code.",
     font_size=12,
 )
 
