@@ -300,6 +300,19 @@ html.reveal-full-page,
   margin-bottom: 0.2em;
 }
 
+.architecture-grid .card {
+  min-height: 2.15em;
+}
+
+.architecture-grid .card h4 {
+  font-size: 0.62em;
+}
+
+.architecture-grid .card p {
+  font-size: 0.54em;
+  line-height: 1.35;
+}
+
 .card.tone-accent {
   border-color: rgba(124, 92, 255, 0.4);
   background: linear-gradient(180deg, rgba(124, 92, 255, 0.12), rgba(18, 21, 34, 0.3));

@@ -11,6 +11,7 @@ Run: /path/to/venv/bin/python presentation/pptx/build_pptx.py
 from __future__ import annotations
 
 import os
+import re
 import subprocess
 
 from pptx import Presentation
@@ -118,6 +119,30 @@ def add_body(slide, text, top, *, left=Inches(0.7), width=Inches(11.5), size=16,
     r.text = text
     style_run(r, size=size, color=color)
     return tf
+
+
+def add_code_runs(paragraph, text, *, font_size, highlights=None):
+    highlights = highlights or []
+    if not highlights:
+        r = paragraph.add_run()
+        r.text = text
+        style_run(r, size=font_size, color=RGBColor(0xD6, 0xDC, 0xF5), font=FONT_CODE)
+        return
+
+    pattern = re.compile("(" + "|".join(re.escape(term) for term in sorted(highlights, key=len, reverse=True)) + ")")
+    for part in pattern.split(text):
+        if not part:
+            continue
+        is_highlight = part in highlights
+        r = paragraph.add_run()
+        r.text = part
+        style_run(
+            r,
+            size=font_size,
+            color=ACCENT_2 if is_highlight else RGBColor(0xD6, 0xDC, 0xF5),
+            bold=is_highlight,
+            font=FONT_CODE,
+        )
 
 
 def rounded_card(slide, left, top, width, height, *, border_color=CARD_BORDER, fill=CARD):
@@ -304,6 +329,7 @@ def folder_tree_slide(kicker, title, columns, note_text=None, notes=""):
 
 def code_and_image_slide(
     kicker, title, left_label, code_text, right_label, image_path, note_text=None, notes="", font_size=13,
+    code_highlights=None,
 ):
     """Two stacked "windows": a code block on top, a screenshot below."""
     s = content_slide(kicker, title, notes)
@@ -328,9 +354,7 @@ def code_and_image_slide(
     style_run(br, size=10, color=MUTED, font=FONT_CODE)
     _, tf = add_textbox(s, x + Inches(0.2), top1 + Inches(0.55), full_w - Inches(0.4), height1 - Inches(0.75))
     p = tf.paragraphs[0]
-    r = p.add_run()
-    r.text = code_text
-    style_run(r, size=font_size, color=RGBColor(0xD6, 0xDC, 0xF5), font=FONT_CODE)
+    add_code_runs(p, code_text, font_size=font_size, highlights=code_highlights)
     p.line_spacing = 1.3
 
     # Bottom: screenshot window.
@@ -557,7 +581,7 @@ code_window_slide("What it became", "An excerpt from the full implementation pro
           "architectural constraints, Temporal capabilities, UI requirements, and acceptance criteria.",
     font_size=11)
 
-s = content_slide("Read it again, like a coding agent has to", "Five things it never says",
+s = content_slide("Read it again, like a coding agent has to", "What is not said",
     notes="The point isn't 'this prompt is bad' \u2014 it under-specifies exactly the decisions "
           "that make or break a durable-execution design.")
 _, tf = add_textbox(s, Inches(0.7), Inches(2.0), Inches(5.6), Inches(2.5))
@@ -580,10 +604,10 @@ for q in [
     p2.space_after = Pt(8)
     r1 = p2.add_run(); r1.text = "?  "; style_run(r1, size=15, color=SUCCESS, bold=True)
     r2 = p2.add_run(); r2.text = q; style_run(r2, size=15, color=TEXT)
-add_body(s, "None of this makes the prompt bad \u2014 it's a perfectly normal first draft.",
+add_body(s, "None of this makes the prompt bad.",
           Inches(5.0), size=14)
 
-cards_slide("The move that actually matters", "I didn't fix the prompt myself. I asked AI to fix it.", [
+skill_slide = cards_slide("The move that actually matters", "I didn't fix the prompt myself. I asked AI to fix it.", [
     ("Why not write the spec by hand?", "Because \u201cwhat should a good Temporal spec contain\u201d is "
      "itself a question worth delegating \u2014 the model already knows the shape of retries, "
      "signals, queries, sagas, especially with a Temporal skill loaded for grounding.", ACCENT_2),
@@ -591,6 +615,11 @@ cards_slide("The move that actually matters", "I didn't fix the prompt myself. I
      "covered architecture, failure modes, and UI/UX explicitly.", ACCENT_2),
 ], cols=2, start_y=2.0, card_h=2.0,
     notes="Generalizable trick: use the model to interrogate its own upcoming task.")
+_, skill_tf = add_textbox(skill_slide, Inches(0.7), Inches(6.45), Inches(11.9), Inches(0.35))
+skill_p = skill_tf.paragraphs[0]
+skill_r1 = skill_p.add_run(); skill_r1.text = "Temporal AI skill: "; style_run(skill_r1, size=13, color=MUTED)
+skill_r2 = skill_p.add_run(); skill_r2.text = "github.com/temporalio/skill-temporal-developer"; style_run(skill_r2, size=13, color=ACCENT_2, font=FONT_CODE)
+skill_r2.hyperlink.address = "https://github.com/temporalio/skill-temporal-developer"
 
 cards_slide("What came back", "The improved prompt  (condensed)", [
     ("Stack & architecture, named explicitly",
@@ -626,38 +655,31 @@ section_slide("02", "What Got Built",
 s = content_slide("Architecture", "Four pieces, one source of truth",
     notes="Walk left to right. UI never talks to Temporal directly \u2014 only through the API.")
 boxes = [
-    ("React Dashboard", "polling \u00b7 localStorage prefs only"),
-    ("NestJS API", "Temporal client \u00b7 REST facade"),
-    ("Temporal Server", "event history \u00b7 task queue \u00b7 visibility"),
-    ("NestJS Worker", "workflows + activities"),
+    ("React Dashboard", "Polls the API and keeps only preferences + recent workflow IDs in localStorage.", CARD, CARD_BORDER),
+    ("NestJS API", "REST facade that starts workflows, sends signals, and runs workflow queries.", CARD, CARD_BORDER),
+    ("Temporal Server", "Event history, task queues, timers, visibility, and the authoritative claim state.", RGBColor(0x1c, 0x16, 0x30), ACCENT),
+    ("NestJS Worker", "Runs deterministic workflow code and side-effecting activity implementations.", CARD, CARD_BORDER),
 ]
-x = Inches(0.7)
-w = Inches(2.7)
-gap = Inches(0.35)
-for i, (name, sub) in enumerate(boxes):
-    fill = RGBColor(0x1c, 0x16, 0x30) if i == 2 else CARD
-    border = ACCENT if i == 2 else CARD_BORDER
-    box = rounded_card(s, x, Inches(2.2), w, Inches(1.1), fill=fill, border_color=border)
-    _, tf = add_textbox(s, x + Inches(0.15), Inches(2.35), w - Inches(0.3), Inches(0.8))
-    p = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER
-    r = p.add_run(); r.text = name; style_run(r, size=14, color=TEXT, bold=True)
-    p2 = tf.add_paragraph(); p2.alignment = PP_ALIGN.CENTER
-    r2 = p2.add_run(); r2.text = sub; style_run(r2, size=10, color=MUTED)
-    if i < len(boxes) - 1:
-        _, atf = add_textbox(s, Emu(int(x + w)), Inches(2.55), gap, Inches(0.5))
-        ap = atf.paragraphs[0]; ap.alignment = PP_ALIGN.CENTER
-        ar = ap.add_run(); ar.text = "\u2192"; style_run(ar, size=20, color=ACCENT_2)
-    x = Emu(int(x + w + gap))
+card_w = Inches(5.65)
+card_h = Inches(1.35)
+positions = [(Inches(0.7), Inches(2.0)), (Inches(6.55), Inches(2.0)), (Inches(0.7), Inches(3.55)), (Inches(6.55), Inches(3.55))]
+for (name, sub, fill, border), (x, y) in zip(boxes, positions):
+    rounded_card(s, x, y, card_w, card_h, fill=fill, border_color=border)
+    _, tf = add_textbox(s, x + Inches(0.25), y + Inches(0.22), card_w - Inches(0.5), card_h - Inches(0.35))
+    p = tf.paragraphs[0]
+    r = p.add_run(); r.text = name; style_run(r, size=18, color=ACCENT_2 if name == "Temporal Server" else TEXT, bold=True)
+    p2 = tf.add_paragraph(); p2.space_before = Pt(5)
+    r2 = p2.add_run(); r2.text = sub; style_run(r2, size=13, color=MUTED)
 badges = [("\u2717 no database, anywhere", ERROR), ("\u2713 Temporal event history is the state", SUCCESS),
           ("\u2713 localStorage = prefs + recent ids only", WAITING)]
 x = Inches(0.7)
 for text, color in badges:
-    _, tf = add_textbox(s, x, Inches(3.7), Inches(4), Inches(0.4))
+    _, tf = add_textbox(s, x, Inches(5.4), Inches(4), Inches(0.4))
     p = tf.paragraphs[0]
-    r = p.add_run(); r.text = text; style_run(r, size=13, color=color, bold=True)
+    r = p.add_run(); r.text = text; style_run(r, size=14, color=color, bold=True)
     x = Emu(int(x + Inches(4.0)))
 
-s = content_slide("The business process", "Nine stages \u2192 nine Temporal decisions",
+s = content_slide("The business process", "Nine stages",
     notes="Exact stage list from the improved prompt. Stage 6 = the required signal, precisely specified.")
 stages = [
     ("1. Submitted", "workflow start"), ("2. Validation", "activity + retry"),
@@ -680,7 +702,15 @@ for i, (name, tag) in enumerate(stages):
     p = tf.paragraphs[0]
     r = p.add_run(); r.text = name; style_run(r, size=14, color=TEXT, bold=True)
     p2 = tf.add_paragraph()
-    r2 = p2.add_run(); r2.text = tag; style_run(r2, size=11, color=ACCENT_2, font=FONT_CODE)
+    if "activity" in tag:
+        before, after = tag.split("activity", 1)
+        if before:
+            r2 = p2.add_run(); r2.text = before; style_run(r2, size=11, color=ACCENT_2, font=FONT_CODE)
+        r_activity = p2.add_run(); r_activity.text = "activity"; style_run(r_activity, size=11, color=ACCENT, bold=True, font=FONT_CODE)
+        if after:
+            r3 = p2.add_run(); r3.text = after; style_run(r3, size=11, color=ACCENT_2, font=FONT_CODE)
+    else:
+        r2 = p2.add_run(); r2.text = tag; style_run(r2, size=11, color=ACCENT_2, font=FONT_CODE)
 add_body(s, "Every chip on this rail is a query result, live, from a running Temporal workflow.",
           Inches(5.2), size=14)
 
@@ -763,6 +793,7 @@ code_and_image_slide(
           "activity invocations, two of them running in parallel. That parallelism is exactly what "
           "you see as two overlapping bars below, with zero extra instrumentation code.",
     font_size=12,
+    code_highlights=["fraudCheckWorkflow", "checkClaimHistory", "checkWatchlists", "scoreFraudRisk"],
 )
 
 cards_slide("The Temporal bingo card", "What's actually demonstrated", [
@@ -781,7 +812,7 @@ cards_slide("The Temporal bingo card", "What's actually demonstrated", [
 ], cols=3, start_y=2.0, card_h=1.3, notes="Let it sit as a 'yes it really does all of this' moment.")
 
 section_slide("03", "Let's See It Run",
-    "Real failures. Real recovery. No cuts hiding a crash.")
+    "Real failures. Real recovery.")
 
 DEMOS = [
     ("DEMO 1 / 6", ACCENT, "Submit a claim, watch it run", "submit-and-progress.mp4",
@@ -820,10 +851,11 @@ for badge, color, title, fname, path, points, notes in DEMOS:
     demo_slide(badge, color, title, fname, path, points, notes=notes)
 
 section_slide("04", "Matching Your Use Case",
-    "Turning what we just saw into a checklist you can use.")
+    "")
 
 bullets_slide("Pattern match", "Signals you have a good Temporal use case", [
     ("\u2713", "A process that spans minutes, days, or months \u2014 not one request/response"),
+    ("\u2713", "Short-lived workflows can still fit \u2014 milliseconds or seconds are fine when you need durability, retries, or history"),
     ("\u2713", "A human has to approve, deny, or provide info at some unknown point"),
     ("\u2713", "Steps call flaky external systems that need retries with backoff"),
     ("\u2713", "A crash mid-process must not lose or double-run anything"),
