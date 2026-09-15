@@ -42,6 +42,7 @@ CODE_BG = RGBColor(0x0D, 0x10, 0x20)
 
 FONT = "Segoe UI"
 FONT_CODE = "Consolas"
+FONT_BRAND = "Montserrat"
 
 SLIDE_W = Inches(13.333)
 SLIDE_H = Inches(7.5)
@@ -225,6 +226,101 @@ def title_slide(kicker, title, subtitle, meta_items, notes=""):
         style_run(r4, size=11, color=MUTED)
         x += Inches(2.6)
     set_notes(s, notes)
+    return s
+
+
+def shamrock_intro_slide():
+    s = new_slide()
+    bg = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, SLIDE_W, SLIDE_H)
+    bg.fill.solid()
+    bg.fill.fore_color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+    bg.line.fill.background()
+    bg.shadow.inherit = False
+
+    green = RGBColor(0x00, 0x73, 0x4E)
+    ink = RGBColor(0x10, 0x14, 0x18)
+    body = RGBColor(0x4D, 0x55, 0x59)
+    line = RGBColor(0xDE, 0xE2, 0xE6)
+
+    _, logo_tf = add_textbox(s, Inches(0.7), Inches(0.45), Inches(4.9), Inches(0.45))
+    logo_p = logo_tf.paragraphs[0]
+    logo_r = logo_p.add_run()
+    logo_r.text = "SHAMROCK"
+    style_run(logo_r, size=24, color=green, bold=True, font=FONT_BRAND)
+
+    _, name_tf = add_textbox(s, Inches(0.7), Inches(2.05), Inches(5.0), Inches(0.9))
+    name_p = name_tf.paragraphs[0]
+    name_r = name_p.add_run()
+    name_r.text = "Brian Simonson"
+    style_run(name_r, size=42, color=ink, bold=True, font=FONT_BRAND)
+
+    _, role_tf = add_textbox(s, Inches(0.7), Inches(3.0), Inches(5.0), Inches(0.35))
+    role_p = role_tf.paragraphs[0]
+    role_r = role_p.add_run()
+    role_r.text = "PRINCIPAL ENGINEER"
+    style_run(role_r, size=12, color=green, bold=True, font=FONT_BRAND)
+
+    rule = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.7), Inches(3.72), Inches(4.5), Pt(1.5))
+    rule.fill.solid()
+    rule.fill.fore_color.rgb = line
+    rule.line.fill.background()
+    rule.shadow.inherit = False
+
+    desc = ("Shamrock Trading Corporation is a world-leading provider of transportation, financial "
+            "and technology services, helping businesses move freight, improve cash flow and "
+            "streamline operations.")
+    _, desc_tf = add_textbox(s, Inches(0.7), Inches(4.0), Inches(4.85), Inches(1.25))
+    desc_p = desc_tf.paragraphs[0]
+    desc_r = desc_p.add_run()
+    desc_r.text = desc
+    style_run(desc_r, size=14, color=body, font=FONT_BRAND)
+    desc_p.line_spacing = 1.25
+
+    photo_path = os.path.join(ASSETS_DIR, "shamrock-headquarters.png")
+    if os.path.exists(photo_path):
+        pic = s.shapes.add_picture(photo_path, Inches(6.1), Inches(1.45), width=Inches(6.45), height=Inches(3.65))
+        pic.shadow.inherit = False
+        border = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(6.1), Inches(1.45), Inches(6.45), Inches(3.65))
+        border.fill.background()
+        border.line.color.rgb = line
+        border.line.width = Pt(1.5)
+        border.shadow.inherit = False
+
+    stats = [
+        ("4", "BRANDS"),
+        ("12", "LOCATIONS"),
+        ("40", "LANGUAGES\nSPOKEN"),
+        ("40", "COUNTRIES\nSERVED"),
+        ("2.5k", "EMPLOYEES"),
+    ]
+    rounded_card(s, Inches(0.7), Inches(5.75), Inches(11.85), Inches(1.15), border_color=line, fill=RGBColor(0xFF, 0xFF, 0xFF))
+    for i, (value, label) in enumerate(stats):
+        x = Inches(1.1 + i * 2.25)
+        _, tf = add_textbox(s, x, Inches(5.93), Inches(1.75), Inches(0.75))
+        p = tf.paragraphs[0]
+        p.alignment = PP_ALIGN.CENTER
+        r = p.add_run()
+        r.text = value
+        style_run(r, size=25, color=green, font=FONT_BRAND)
+        p2 = tf.add_paragraph()
+        p2.alignment = PP_ALIGN.CENTER
+        r2 = p2.add_run()
+        r2.text = label
+        style_run(r2, size=9, color=ink, bold=True, font=FONT_BRAND)
+        if i < len(stats) - 1:
+            _, ctf = add_textbox(s, Inches(2.72 + i * 2.25), Inches(6.12), Inches(0.25), Inches(0.3))
+            cp = ctf.paragraphs[0]
+            cr = cp.add_run()
+            cr.text = "›"
+            style_run(cr, size=20, color=line, bold=True, font=FONT_BRAND)
+
+    set_notes(
+        s,
+        "Good afternoon, everyone. I’m Brian Simonson, Principal Engineer at Shamrock Trading "
+        "Corporation. Shamrock is a world-leading provider of transportation, financial and "
+        "technology services, helping businesses move freight, improve cash flow, and streamline "
+        "operations across a global footprint.",
+    )
     return s
 
 
@@ -517,6 +613,8 @@ def statement_slide(kicker, lines, attribution, notes=""):
 # ---------------------------------------------------------------------------
 # Build the deck (same order/content as slides/index.html)
 # ---------------------------------------------------------------------------
+
+shamrock_intro_slide()
 
 title_slide(
     "A live-coded case study",

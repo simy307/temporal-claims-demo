@@ -6,7 +6,7 @@
  * like one continuous visual world.
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Montserrat:wght@400;500;600;700&display=swap');
 
 :root {
   --bg: #0a0c16;
@@ -44,6 +44,19 @@ html.reveal-full-page,
 .reveal .slides section {
   text-align: left;
   height: 100%;
+}
+
+/* Vertically centers a slide's content within the canvas. Applied as an inner wrapper rather
+   than on the <section> itself, because reveal.js sets `display` inline on every slide. */
+.reveal .slides section > .v-center {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.reveal .slides section > .v-center > * {
+  flex: none;
 }
 
 .reveal .slides {
@@ -164,6 +177,123 @@ html.reveal-full-page,
   text-transform: uppercase;
   letter-spacing: 0.14em;
   margin-bottom: 0.6em;
+}
+
+/* ---------------------------------------------------- intro slide (Shamrock brand styling) */
+
+.reveal .shamrock-slide {
+  --sr-green: #00734e;
+  --sr-ink: #101418;
+  --sr-body: #4d5559;
+  --sr-line: #dee2e6;
+  font-family: 'Montserrat', var(--r-main-font);
+  color: var(--sr-ink);
+}
+
+.intro-slide {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.75em;
+}
+
+.intro-slide .sr-logo {
+  height: 1.15em;
+  width: auto;
+  display: block;
+  align-self: flex-start;
+  margin: 0;
+}
+
+.intro-slide .intro-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr);
+  align-items: center;
+  gap: 1.3em;
+}
+
+.reveal .intro-slide .sr-name {
+  font-family: inherit;
+  font-size: 2.15em;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  color: var(--sr-ink);
+  margin: 0;
+}
+
+.intro-slide .sr-role {
+  font-size: 0.52em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--sr-green);
+  margin-top: 0.7em;
+}
+
+.reveal .intro-slide .sr-desc {
+  font-size: 0.46em;
+  line-height: 1.6;
+  color: var(--sr-body);
+  margin: 1.5em 0 0;
+  padding-top: 1.5em;
+  border-top: 2px solid var(--sr-line);
+}
+
+.intro-slide .intro-photo {
+  height: 8.9em;
+  border: 2px solid var(--sr-line);
+  border-radius: 24px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.intro-slide .intro-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.intro-slide .sr-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 0.35em;
+  border: 2px solid var(--sr-line);
+  border-radius: 28px;
+  padding: 0.85em 1.2em;
+}
+
+.intro-slide .sr-stat {
+  text-align: center;
+}
+
+.intro-slide .sr-stat-value {
+  font-size: 1.45em;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--sr-green);
+}
+
+.intro-slide .sr-stat-label {
+  font-size: 0.34em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  color: var(--sr-ink);
+  margin-top: 0.75em;
+}
+
+.intro-slide .sr-chevron {
+  flex: none;
+  width: 0.42em;
+  height: 0.42em;
+  border-top: 4px solid #d9dee3;
+  border-right: 4px solid #d9dee3;
+  transform: rotate(45deg);
 }
 
 /* ------------------------------------------------------------------ title slide */

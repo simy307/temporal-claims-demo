@@ -13,6 +13,66 @@
     <div class="reveal">
       <div class="slides">
         <!-- ============================================================ -->
+        <!-- 0. INTRO                                                       -->
+        <!-- ============================================================ -->
+        <section data-background-color="#ffffff" class="shamrock-slide">
+          <div class="intro-slide">
+            <img class="sr-logo" src="../assets/shamrock-logo.svg" alt="Shamrock Trading Corporation" />
+
+            <div class="intro-body">
+              <div class="intro-copy">
+                <h1 class="sr-name">Brian Simonson</h1>
+                <div class="sr-role">Principal Engineer</div>
+                <p class="sr-desc">
+                  Shamrock Trading Corporation is a world-leading provider of transportation, financial
+                  and technology services, helping businesses move freight, improve cash flow and
+                  streamline operations.
+                </p>
+              </div>
+              <div class="intro-photo">
+                <img
+                  src="../assets/shamrock-headquarters.png"
+                  alt="Shamrock Trading Corporation headquarters"
+                />
+              </div>
+            </div>
+
+            <div class="sr-stats">
+              <div class="sr-stat">
+                <div class="sr-stat-value">4</div>
+                <div class="sr-stat-label">Brands</div>
+              </div>
+              <span class="sr-chevron"></span>
+              <div class="sr-stat">
+                <div class="sr-stat-value">12</div>
+                <div class="sr-stat-label">Locations</div>
+              </div>
+              <span class="sr-chevron"></span>
+              <div class="sr-stat">
+                <div class="sr-stat-value">40</div>
+                <div class="sr-stat-label">Languages<br />Spoken</div>
+              </div>
+              <span class="sr-chevron"></span>
+              <div class="sr-stat">
+                <div class="sr-stat-value">40</div>
+                <div class="sr-stat-label">Countries<br />Served</div>
+              </div>
+              <span class="sr-chevron"></span>
+              <div class="sr-stat">
+                <div class="sr-stat-value">2.5k</div>
+                <div class="sr-stat-label">Employees</div>
+              </div>
+            </div>
+          </div>
+          <aside class="notes">
+            Good afternoon, everyone. I’m Brian Simonson, Principal Engineer at Shamrock Trading
+            Corporation. Shamrock is a world-leading provider of transportation, financial and
+            technology services, helping businesses move freight, improve cash flow, and streamline
+            operations across a global footprint.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
         <!-- 1. TITLE                                                       -->
         <!-- ============================================================ -->
         <section>
@@ -39,6 +99,7 @@
         <!-- 2. AGENDA                                                     -->
         <!-- ============================================================ -->
         <section>
+          <div class="v-center">
           <div class="slide-kicker">Agenda</div>
           <h1>Where we're headed</h1>
           <ul class="checklist" style="margin-top: 0.8em">
@@ -48,6 +109,7 @@
             <li><span class="check">04</span>&nbsp;<span class="label">Lessons — how to match your use case to Temporal</span></li>
             <li><span class="check">05</span>&nbsp;<span class="label">Resources &amp; how to try this yourself</span></li>
           </ul>
+          </div>
           <aside class="notes">
             Quick roadmap slide. Keep this brief — 15-20 seconds, tops.
           </aside>
@@ -77,6 +139,7 @@
         <!-- 4. THE EXPERIMENT                                             -->
         <!-- ============================================================ -->
         <section>
+          <div class="v-center">
           <div class="slide-kicker">The experiment</div>
           <h1>I asked AI a vague prompt.<br />Here's what happened.</h1>
           <p class="muted small" style="max-width: 26em; margin-top: 0.6em">
@@ -95,6 +158,7 @@
               <h4>Step 3</h4>
               <p>Hand that spec to a coding agent &amp; build it</p>
             </div>
+          </div>
           </div>
           <aside class="notes">
             Set up the three-act structure of the talk. Emphasize this is reproducible — anyone in
@@ -117,6 +181,7 @@
         <!-- 5. THE ORIGINAL PROMPT                                        -->
         <!-- ============================================================ -->
         <section>
+          <div class="v-center">
           <div class="slide-kicker">What I actually typed</div>
           <h2>My first prompt (verbatim)</h2>
           <div class="window" style="margin-top: 0.5em">
@@ -133,6 +198,7 @@
               Use local storage so the UI persists on refresh.
             </div>
           </div>
+          </div>
           <aside class="notes">
             Read it out loud, typo and all ("at lease 1"). This is intentionally the kind of prompt
             real engineers write — enthusiastic, directionally correct, structurally thin.
@@ -143,6 +209,7 @@
         <!-- 6. THE IMPROVED PROMPT EXCERPT                                -->
         <!-- ============================================================ -->
         <section>
+          <div class="v-center">
           <div class="slide-kicker">What it became</div>
           <h2>An excerpt from the full implementation prompt</h2>
           <div class="window" style="margin-top: 0.45em">
@@ -163,6 +230,7 @@
               controls for sending the appropriate signal.
             </div>
           </div>
+          </div>
           <aside class="notes">
             This is the turning point: the prompt stopped being a wish list and became a set of
             architectural constraints, Temporal capabilities, UI requirements, and acceptance criteria.
@@ -173,6 +241,7 @@
         <!-- 7. WHAT'S MISSING                                             -->
         <!-- ============================================================ -->
         <section>
+          <div class="v-center">
           <div class="slide-kicker">Read it again, like a coding agent has to</div>
           <h2>What is not said</h2>
           <div class="two-col" style="margin-top: 0.5em">
@@ -191,6 +260,7 @@
           <p class="muted small" style="margin-top: 0.7em">
             None of this makes the prompt bad.
           </p>
+          </div>
           <aside class="notes">
             The point isn't "this prompt is bad," it's "this prompt under-specifies exactly the
             decisions that make or break a durable-execution design." That's the veil.
@@ -201,6 +271,7 @@
         <!-- 7. ASKING AI TO IMPROVE THE PROMPT (META STEP)                -->
         <!-- ============================================================ -->
         <section>
+          <div class="v-center">
           <div class="slide-kicker">The move that actually matters</div>
           <h1>I didn't fix the prompt myself.<br />I asked AI to fix it.</h1>
           <div class="grid cols-2" style="margin-top: 1em">
@@ -219,6 +290,7 @@
           <p class="muted small" style="margin-top: 0.7em">
             Temporal AI skill: <a href="https://github.com/temporalio/skill-temporal-developer">github.com/temporalio/skill-temporal-developer</a>
           </p>
+          </div>
           <aside class="notes">
             This is the generalizable trick: use the model to interrogate its own upcoming task —
             a loaded Temporal skill makes this sharper still. It's cheap, fast, and it front-loads
@@ -231,6 +303,7 @@
         <!-- 8. THE IMPROVED PROMPT                                        -->
         <!-- ============================================================ -->
         <section>
+          <div class="v-center">
           <div class="slide-kicker">What came back</div>
           <h2>The improved prompt <span class="badge b-accent">condensed</span></h2>
           <div class="grid cols-2" style="margin-top: 0.5em">
@@ -256,6 +329,7 @@
               <p>README, unit tests, <mark>one integration test</mark> that signals a real workflow
                 to completion, build/lint/test must pass before calling it finished</p>
             </div>
+          </div>
           </div>
           <aside class="notes">
             Full text is in the appendix slides at the end if anyone wants to read it verbatim. The
@@ -302,6 +376,7 @@
         <!-- 10. ARCHITECTURE DIAGRAM                                      -->
         <!-- ============================================================ -->
         <section>
+          <div class="v-center">
           <div class="slide-kicker">Architecture</div>
           <h2>Four pieces, one source of truth</h2>
           <div class="grid cols-2 architecture-grid" style="margin-top: 0.75em">
@@ -327,6 +402,7 @@
             <span class="badge b-success">✓ Temporal event history is the state</span>
             <span class="badge b-waiting">✓ localStorage = prefs + recent ids only</span>
           </div>
+          </div>
           <aside class="notes">
             Walk left to right. The UI never talks to Temporal directly — only through the API. The
             API never runs workflow/activity code — only the worker does. That separation was an
@@ -338,6 +414,7 @@
         <!-- 11. CLAIM LIFECYCLE MAPPED TO PRIMITIVES                       -->
         <!-- ============================================================ -->
         <section>
+          <div class="v-center">
           <div class="slide-kicker">The business process</div>
           <h2>Nine stages</h2>
           <div class="stage-rail">
@@ -355,6 +432,7 @@
             Every chip on this rail is a query result, live, from a running Temporal workflow — not a
             hand-maintained progress bar.
           </p>
+          </div>
           <aside class="notes">
             This is the exact stage list from the improved prompt, unchanged. Note stage 6 — "waits
             forever" — that's the one required signal from the original rough prompt, now precisely
@@ -677,6 +755,7 @@
         <!-- 20. SIGNALS YOU HAVE A GOOD USE CASE                           -->
         <!-- ============================================================ -->
         <section>
+          <div class="v-center">
           <div class="slide-kicker">Pattern match</div>
           <h2>Signals you have a good Temporal use case</h2>
           <ul class="checklist" style="margin-top: 0.7em">
@@ -688,6 +767,7 @@
             <li><span class="check">✓</span>&nbsp;<span class="label">You need an audit trail of exactly what happened, in order</span></li>
             <li><span class="check">✓</span>&nbsp;<span class="label">Multiple steps must be undone together if a later one fails (saga)</span></li>
           </ul>
+          </div>
           <aside class="notes">
             Ask the room: "how many of your services already do at least three of these with cron
             jobs, status columns, and dead-letter queues?" That's usually most of the hands.
@@ -698,6 +778,7 @@
         <!-- 21. THE GENERALIZED PROMPT LESSON                              -->
         <!-- ============================================================ -->
         <section>
+          <div class="v-center">
           <div class="slide-kicker">The reusable checklist</div>
           <h2>Durability questions to ask yourself</h2>
           <div class="grid cols-2" style="margin-top: 0.6em">
@@ -724,6 +805,7 @@
             Answer these four categories before you design the system, and your Temporal model gets
             much easier to see.
           </p>
+          </div>
           <aside class="notes">
             This slide is the payoff of the whole talk — a generalized checklist for deciding whether
             a process maps cleanly to Temporal, not just this insurance-claims example.
@@ -734,6 +816,7 @@
         <!-- 22. TRY THIS YOURSELF                                          -->
         <!-- ============================================================ -->
         <section>
+          <div class="v-center">
           <div class="slide-kicker">Homework</div>
           <h2>Try this yourself, this week</h2>
           <div class="window" style="margin-top: 0.5em">
@@ -750,6 +833,7 @@
               should be drawn. Then build it.
             </div>
           </div>
+          </div>
           <aside class="notes">
             Literally invite people to paste their own use case into this template tonight. Mention
             the repo is public (link on the next slide) so they can see the exact result of this
@@ -761,6 +845,7 @@
         <!-- 24. RESOURCES                                                  -->
         <!-- ============================================================ -->
         <section>
+          <div class="v-center">
           <div class="slide-kicker">Go build something</div>
           <h2>Resources</h2>
           <div class="grid cols-2" style="margin-top: 0.7em">
@@ -780,6 +865,7 @@
               <h4>The prompt template</h4>
               <p>Previous slide — steal it, adapt it, use it on your own use case</p>
             </div>
+          </div>
           </div>
           <aside class="notes">
             Fill in your actual repo URL before the talk. Consider a QR code here if presenting in
