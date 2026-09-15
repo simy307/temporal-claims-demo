@@ -690,29 +690,29 @@ stages = [
 ]
 cols = 3
 cw = Inches(3.83)
-ch = Inches(0.9)
-gap = Inches(0.15)
+ch = Inches(1.15)
+gap = Inches(0.18)
 for i, (name, tag) in enumerate(stages):
     col = i % cols
     row = i // cols
     x = Emu(int(Inches(0.7) + col * (cw + gap)))
-    y = Emu(int(Inches(2.0) + row * (ch + gap)))
+    y = Emu(int(Inches(1.9) + row * (ch + gap)))
     rounded_card(s, x, y, cw, ch)
-    _, tf = add_textbox(s, Emu(int(x + Inches(0.15))), Emu(int(y + Inches(0.12))), Emu(int(cw - Inches(0.3))), Emu(int(ch - Inches(0.2))))
+    _, tf = add_textbox(s, Emu(int(x + Inches(0.2))), Emu(int(y + Inches(0.16))), Emu(int(cw - Inches(0.4))), Emu(int(ch - Inches(0.25))))
     p = tf.paragraphs[0]
-    r = p.add_run(); r.text = name; style_run(r, size=14, color=TEXT, bold=True)
+    r = p.add_run(); r.text = name; style_run(r, size=18, color=TEXT, bold=True)
     p2 = tf.add_paragraph()
     if "activity" in tag:
         before, after = tag.split("activity", 1)
         if before:
-            r2 = p2.add_run(); r2.text = before; style_run(r2, size=11, color=ACCENT_2, font=FONT_CODE)
-        r_activity = p2.add_run(); r_activity.text = "activity"; style_run(r_activity, size=11, color=ACCENT, bold=True, font=FONT_CODE)
+            r2 = p2.add_run(); r2.text = before; style_run(r2, size=13, color=ACCENT_2, font=FONT_CODE)
+        r_activity = p2.add_run(); r_activity.text = "activity"; style_run(r_activity, size=13, color=ACCENT, bold=True, font=FONT_CODE)
         if after:
-            r3 = p2.add_run(); r3.text = after; style_run(r3, size=11, color=ACCENT_2, font=FONT_CODE)
+            r3 = p2.add_run(); r3.text = after; style_run(r3, size=13, color=ACCENT_2, font=FONT_CODE)
     else:
-        r2 = p2.add_run(); r2.text = tag; style_run(r2, size=11, color=ACCENT_2, font=FONT_CODE)
+        r2 = p2.add_run(); r2.text = tag; style_run(r2, size=13, color=ACCENT_2, font=FONT_CODE)
 add_body(s, "Every chip on this rail is a query result, live, from a running Temporal workflow.",
-          Inches(5.2), size=14)
+          Inches(5.75), size=15)
 
 folder_tree_slide("Architecture", "Inside the three packages", [
     ("WEB \u2014 DASHBOARD",

@@ -505,31 +505,29 @@ html.reveal-full-page,
 /* ------------------------------------------------------------------ timeline (claim lifecycle) */
 
 .stage-rail {
-  display: flex;
-  gap: 0.35em;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.45em;
   width: 100%;
-  margin-top: 0.5em;
-  flex-wrap: wrap;
+  margin-top: 0.7em;
 }
 
 .stage-chip {
-  flex: 1;
-  min-width: 8.5em;
   border: 1px solid var(--card-border);
   border-radius: 10px;
-  padding: 0.4em 0.5em;
+  padding: 0.55em 0.7em;
   background: var(--card);
 }
 
 .stage-chip .stage-name {
-  font-size: 0.4em;
+  font-size: 0.56em;
   font-weight: 700;
   color: var(--text);
   display: block;
 }
 
 .stage-chip .stage-tag {
-  font-size: 0.34em;
+  font-size: 0.44em;
   color: var(--accent-2);
   font-family: var(--r-code-font);
   display: block;
