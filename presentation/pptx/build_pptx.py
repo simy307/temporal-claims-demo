@@ -507,6 +507,14 @@ title_slide(
     ),
 )
 
+bullets_slide("Agenda", "Where we're headed", [
+    ("01", "The prompt experiment \u2014 before & after"),
+    ("02", "What actually got built (architecture + lifecycle)"),
+    ("03", "Live demo \u2014 real failures, real recovery"),
+    ("04", "Lessons \u2014 how to match your use case to Temporal"),
+    ("05", "Resources & how to try this yourself"),
+], bullet_color=SUCCESS, notes="Quick roadmap. Keep brief.")
+
 statement_slide(
     "The question everyone actually has",
     [('"This looks powerful. But is it right for ', False), ("my", True), (' use case?"', False)],
@@ -519,21 +527,11 @@ cards_slide("The experiment", "I asked AI a vague prompt. Here's what happened."
     ("Step 2", "Ask AI to turn it into a real spec", ACCENT),
     ("Step 3", "Hand that spec to a coding agent & build it", ACCENT),
 ], cols=3, start_y=2.9, card_h=1.3,
-    intro="Not \u201chere is a finished spec, build it.\u201d A genuinely rough, one-paragraph idea "
-          "\u2014 the kind you'd type into a chat box on your commute. Then I watched what it took "
-          "to turn that into something worth demoing to engineers.",
+    intro="Not \u201chere is a finished spec, build it.\u201d A genuinely rough, one-paragraph idea.",
     notes="Set up the three-act structure of the talk. Reproducible — anyone can do this on their own use case.")
 
-bullets_slide("Agenda", "Where we're headed", [
-    ("01", "The prompt experiment \u2014 before & after"),
-    ("02", "What actually got built (architecture + lifecycle)"),
-    ("03", "Live demo \u2014 real failures, real recovery"),
-    ("04", "Lessons \u2014 how to match your use case to Temporal"),
-    ("05", "Resources & how to try this yourself"),
-], bullet_color=SUCCESS, notes="Quick roadmap. Keep brief.")
-
 section_slide("01", "The Prompt Experiment",
-              "Before and after \u2014 and why the gap between them is the whole lesson.")
+              "A concrete way to see what Temporal can do for your use case.")
 
 code_window_slide("What I actually typed", "My first prompt (verbatim)", "chat \u2014 untitled idea",
     "> I want to see what temporal workflows can do for me. Create me a project with a UI to "
@@ -542,6 +540,22 @@ code_window_slide("What I actually typed", "My first prompt (verbatim)", "chat \
     "Use a local temporal instance. Implement any cool ideas you can think of. Make sure there "
     "is at lease 1 wait for signal from the UI. Use local storage so the UI persists on refresh.",
     notes="Read it out loud, typo and all ('at lease 1').", font_size=14)
+
+code_window_slide("What it became", "An excerpt from the full implementation prompt",
+    "prompt \u2014 Temporal claims demo spec",
+    "> Create a working monorepo using:\n"
+    "- Temporal TypeScript SDK\n"
+    "- A local Temporal development server\n"
+    "- NestJS for the backend/API and Temporal worker\n"
+    "- React with TypeScript for the UI\n"
+    "- Docker Compose where useful\n\n"
+    "Do not use a database. Temporal must be the source of truth for workflow state and progress.\n\n"
+    "The human-review step should wait indefinitely for an adjuster to approve, deny, or request "
+    "more information. The UI must clearly show that the workflow is waiting for input and provide "
+    "controls for sending the appropriate signal.",
+    notes="This is the turning point: the prompt stopped being a wish list and became a set of "
+          "architectural constraints, Temporal capabilities, UI requirements, and acceptance criteria.",
+    font_size=11)
 
 s = content_slide("Read it again, like a coding agent has to", "Five things it never says",
     notes="The point isn't 'this prompt is bad' \u2014 it under-specifies exactly the decisions "

@@ -36,7 +36,25 @@
         </section>
 
         <!-- ============================================================ -->
-        <!-- 2. THE REAL QUESTION                                          -->
+        <!-- 2. AGENDA                                                     -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="slide-kicker">Agenda</div>
+          <h1>Where we're headed</h1>
+          <ul class="checklist" style="margin-top: 0.8em">
+            <li><span class="check">01</span>&nbsp;<span class="label">The prompt experiment — before &amp; after</span></li>
+            <li><span class="check">02</span>&nbsp;<span class="label">What actually got built (architecture + lifecycle)</span></li>
+            <li><span class="check">03</span>&nbsp;<span class="label">Live demo — real failures, real recovery</span></li>
+            <li><span class="check">04</span>&nbsp;<span class="label">Lessons — how to match your use case to Temporal</span></li>
+            <li><span class="check">05</span>&nbsp;<span class="label">Resources &amp; how to try this yourself</span></li>
+          </ul>
+          <aside class="notes">
+            Quick roadmap slide. Keep this brief — 15-20 seconds, tops.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 3. THE REAL QUESTION                                          -->
         <!-- ============================================================ -->
         <section>
           <div class="statement-slide">
@@ -56,15 +74,13 @@
         </section>
 
         <!-- ============================================================ -->
-        <!-- 3. THE EXPERIMENT                                             -->
+        <!-- 4. THE EXPERIMENT                                             -->
         <!-- ============================================================ -->
         <section>
           <div class="slide-kicker">The experiment</div>
           <h1>I asked AI a vague prompt.<br />Here's what happened.</h1>
           <p class="muted small" style="max-width: 26em; margin-top: 0.6em">
-            Not "here is a finished spec, build it." A genuinely rough, one-paragraph idea — the kind
-            you'd type into a chat box on your commute. Then I watched what it took to turn that into
-            something worth demoing to engineers.
+            Not "here is a finished spec, build it." A genuinely rough, one-paragraph idea.
           </p>
           <div class="grid cols-3" style="margin-top: 1em">
             <div class="card tone-accent">
@@ -87,32 +103,13 @@
         </section>
 
         <!-- ============================================================ -->
-        <!-- 4. AGENDA                                                     -->
-        <!-- ============================================================ -->
-        <section>
-          <div class="slide-kicker">Agenda</div>
-          <h1>Where we're headed</h1>
-          <ul class="checklist" style="margin-top: 0.8em">
-            <li><span class="check">01</span>&nbsp;<span class="label">The prompt experiment — before &amp; after</span></li>
-            <li><span class="check">02</span>&nbsp;<span class="label">What actually got built (architecture + lifecycle)</span></li>
-            <li><span class="check">03</span>&nbsp;<span class="label">Live demo — real failures, real recovery</span></li>
-            <li><span class="check">04</span>&nbsp;<span class="label">Lessons — how to match your use case to Temporal</span></li>
-            <li><span class="check">05</span>&nbsp;<span class="label">Resources &amp; how to try this yourself</span></li>
-          </ul>
-          <aside class="notes">
-            Quick roadmap slide. Keep this brief — 15-20 seconds, tops.
-          </aside>
-        </section>
-
-        <!-- ============================================================ -->
         <!-- SECTION DIVIDER: PART 1                                       -->
         <!-- ============================================================ -->
         <section data-background-color="#0a0c16">
           <div class="section-slide">
             <div class="section-num">01</div>
             <h1>The Prompt Experiment</h1>
-            <div class="section-sub">Before and after — and why the gap between them is the whole
-              lesson.</div>
+            <div class="section-sub">A concrete way to see what Temporal can do for your use case.</div>
           </div>
         </section>
 
@@ -143,7 +140,37 @@
         </section>
 
         <!-- ============================================================ -->
-        <!-- 6. WHAT'S MISSING                                             -->
+        <!-- 6. THE IMPROVED PROMPT EXCERPT                                -->
+        <!-- ============================================================ -->
+        <section>
+          <div class="slide-kicker">What it became</div>
+          <h2>An excerpt from the full implementation prompt</h2>
+          <div class="window" style="margin-top: 0.45em">
+            <div class="window-bar">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+              <span class="label">prompt — Temporal claims demo spec</span>
+            </div>
+            <div class="window-body code-compact">
+              <span class="prompt-marker">&gt;</span> Create a working monorepo using:<br />
+              - Temporal TypeScript SDK<br />
+              - A local Temporal development server<br />
+              - NestJS for the backend/API and Temporal worker<br />
+              - React with TypeScript for the UI<br />
+              - Docker Compose where useful<br /><br />
+              Do not use a database. Temporal must be the source of truth for workflow state and progress.<br /><br />
+              The human-review step should wait indefinitely for an adjuster to approve, deny, or request
+              more information. The UI must clearly show that the workflow is waiting for input and provide
+              controls for sending the appropriate signal.
+            </div>
+          </div>
+          <aside class="notes">
+            This is the turning point: the prompt stopped being a wish list and became a set of
+            architectural constraints, Temporal capabilities, UI requirements, and acceptance criteria.
+          </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 7. WHAT'S MISSING                                             -->
         <!-- ============================================================ -->
         <section>
           <div class="slide-kicker">Read it again, like a coding agent has to</div>
