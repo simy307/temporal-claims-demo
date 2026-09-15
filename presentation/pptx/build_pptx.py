@@ -521,7 +521,7 @@ def statement_slide(kicker, lines, attribution, notes=""):
 title_slide(
     "A live-coded case study",
     "Lifting the Veil",
-    "How to match your use case & Temporal — told through one prompt, one AI coding "
+    "How to match your use case & Temporal — one prompt, one AI coding "
     "agent, and one insurance claim.",
     [("prompt → full app", "1"), ("databases used", "0")],
     notes=(
