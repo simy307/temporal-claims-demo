@@ -948,6 +948,9 @@ DEMOS = [
 for badge, color, title, fname, path, points, notes in DEMOS:
     demo_slide(badge, color, title, fname, path, points, notes=notes)
 
+section_slide("LIVE", "Let's Look at the Live Demo and Temporal UI",
+    "Switch from the recorded walkthrough to the running application and Temporal Web UI.")
+
 section_slide("04", "Matching Your Use Case",
     "")
 
