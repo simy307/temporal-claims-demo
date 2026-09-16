@@ -614,7 +614,8 @@ def statement_slide(kicker, lines, attribution, notes=""):
 # Build the deck (same order/content as slides/index.html)
 # ---------------------------------------------------------------------------
 
-shamrock_intro_slide()
+hidden_intro_slide = shamrock_intro_slide()
+hidden_intro_slide._element.set("show", "0")
 
 title_slide(
     "A live-coded case study",
